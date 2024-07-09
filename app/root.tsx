@@ -4,8 +4,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
-import "./tailwind.css";
+} from '@remix-run/react';
+import './tailwind.css';
+import Sidebar from '~/components/sidebar';
+import { ThemeProvider } from './contexts/themeProvider';
+import Header from './components/header';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,5 +29,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <ThemeProvider>
+      <div className="flex">
+        <Sidebar />
+        <div className="flex flex-col w-full">
+          <Header />
+          <main className="flex-1 p-8 overflow-auto">
+            <Outlet />
+          </main>
+        </div>
+      </div>
+    </ThemeProvider>
+  );
 }
