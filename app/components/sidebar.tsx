@@ -4,12 +4,15 @@ import { PiBooksFill } from 'react-icons/pi';
 import { MdWorkHistory } from 'react-icons/md';
 import classNames from 'classnames';
 import { Tooltip } from 'react-tooltip';
+import AKlogo from '~/assets/AKlogo';
+import { useTheme } from '~/contexts/themeProvider';
 
 const Sidebar = () => {
+  const { isDarkMode } = useTheme();
   return (
     <aside className="flex h-screen">
-      <div className="flex flex-col items-center pt-8 gap-10 bg-gray-200 dark:bg-gray-800 w-24 flex-shrink-0">
-        Logo
+      <div className="flex flex-col items-center gap-4 bg-gray-200 dark:bg-gray-800 w-24 flex-shrink-0">
+        <AKlogo isDarkMode={isDarkMode} height={100} width={100} />
         <nav className="py-4 flex flex-col items-center gap-4">
           <NavLink
             to="/dashboard"

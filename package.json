@@ -11,6 +11,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@remix-run/node": "^2.10.0",
     "@remix-run/react": "^2.10.0",
@@ -23,6 +24,7 @@
     "i18next": "^23.11.5",
     "isbot": "^4.1.0",
     "lucide-react": "^0.400.0",
+    "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^14.1.2",
