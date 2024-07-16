@@ -11,8 +11,6 @@ type DataType = {
 export const loader = async ({ request }: { request: Request }) => {
   const data = await getCategory(request);
 
-  console.log('loader error');
-
   return { data };
 };
 
