@@ -1,20 +1,29 @@
+// config.ts
+import { tokenCookie } from '~/lib/auth/cookies';
+
 const API_URL = 'http://178.18.250.240:9050';
 
 export const baseApiUrl = API_URL;
 
-export const buildUrl = (pathname: string, searchParams?: URLSearchParams) => {
-  const url = new URL(API_URL);
-  url.pathname += pathname;
-  if (searchParams !== undefined) url.search = searchParams.toString();
-
-  return url.href;
+export const buildUrl = (pathname: string) => {
+  return `${baseApiUrl}${pathname}`;
 };
 
-export const getHeaders = () => {
+export const getEnrichedHeaders = async (
+  request: Request,
+  isPost?: boolean,
+) => {
   const headers = new Headers();
+  const cookieHeader = request.headers.get('Cookie');
+  const token = await tokenCookie.parse(cookieHeader);
 
-  headers.set('Accept', 'application/json');
-  headers.set('X-Application-Platform', 'Web-Browser');
-
+  headers.append('Referer', baseApiUrl);
+  headers.append('Accept', 'application/json');
+  if (isPost) {
+    headers.append('Content-Type', 'application/json');
+  }
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
   return headers;
 };

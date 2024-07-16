@@ -1,10 +1,14 @@
 import ThemeToggleButton from '~/contexts/themeToggleButton';
 import { FiLogOut } from 'react-icons/fi';
-import { Link } from '@remix-run/react';
 import AKlogo from '~/assets/AKlogo';
 import { useTheme } from '~/contexts/themeProvider';
+import { Button } from './ui/button';
 
-const Header = () => {
+type Props = {
+  onOpenModal: () => void;
+};
+
+const Header = ({ onOpenModal }: Props) => {
   const { isDarkMode } = useTheme();
 
   return (
@@ -16,12 +20,13 @@ const Header = () => {
         Ahmed Koye
       </div>
       <ThemeToggleButton />
-      <Link
-        to="/logout"
-        className="bg-transparent text-red-700 dark:text-red-300"
+      <Button
+        onClick={onOpenModal}
+        variant="ghost"
+        className="bg-transparent text-red-700 dark:text-red-300 hover:text-red-500 focus:outline-none"
       >
         <FiLogOut size={24} />
-      </Link>
+      </Button>
     </header>
   );
 };
