@@ -1,10 +1,5 @@
 import { Label } from '@radix-ui/react-label';
-import {
-  Form,
-  useActionData,
-  useNavigate,
-  useSearchParams,
-} from '@remix-run/react';
+import { Form, useActionData, useNavigate } from '@remix-run/react';
 import { useEffect, useRef } from 'react';
 import { redirect } from 'react-router';
 import { createCategory } from '~/api/endpoints/category';
@@ -16,12 +11,11 @@ export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();
 
   const name = formData.get('name') as string;
-  const searchParams = new URL(request.url).searchParams;
 
   const response = await createCategory({ request, name });
 
   if (response.ok) {
-    return redirect(`/category?${searchParams}`);
+    return redirect('/category');
   }
 
   return 'Failed to create category';
@@ -32,11 +26,9 @@ function CreateCategory() {
   const isOpen = true;
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [searchParams] = useSearchParams();
 
   const handleClose = () => {
-    const page = searchParams.get('page') || '1';
-    navigate(`/category?page=${page}`);
+    navigate('/category');
   };
 
   useEffect(() => {
@@ -46,7 +38,7 @@ function CreateCategory() {
   }, [isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Create Category">
+    <Modal isOpen={isOpen} onClose={handleClose} header="Edit Category">
       <Form method="post" className="flex flex-col gap-4">
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
@@ -62,7 +54,6 @@ function CreateCategory() {
           type="text"
           name="name"
           id="name"
-          maxLength={50}
           required
         />
         <div className="flex justify-end gap-2">

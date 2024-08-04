@@ -29,9 +29,9 @@ function App() {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full overflow-hidden">
         <Header onOpenModal={handleOpenModal} />
-        <main className="flex-1 p-8 overflow-auto bg-white dark:bg-gray-900">
+        <main className="flex-1 p-8 overflow-scroll bg-white dark:bg-gray-900">
           <LogoutComponent isOpen={isOpen} onClose={handleCloseModal} />
           <Outlet />
         </main>

@@ -10,7 +10,7 @@ import { useTheme } from '~/contexts/themeProvider';
 const Sidebar = () => {
   const { isDarkMode } = useTheme();
   return (
-    <aside className="flex h-screen">
+    <aside className="flex h-screen overflow-hidden">
       <div className="flex flex-col items-center gap-4 bg-gray-200 dark:bg-gray-800 w-24 flex-shrink-0">
         <AKlogo isDarkMode={isDarkMode} height={100} width={100} />
         <nav className="py-4 flex flex-col items-center gap-4">
