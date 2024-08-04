@@ -16,9 +16,10 @@ export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();
 
   const name = formData.get('name') as string;
-  const searchParams = new URL(request.url).searchParams;
 
   const response = await createCategory({ request, name });
+
+  const searchParams = new URL(request.url).searchParams;
 
   if (response.ok) {
     return redirect(`/category?${searchParams}`);
@@ -35,8 +36,7 @@ function CreateCategory() {
   const [searchParams] = useSearchParams();
 
   const handleClose = () => {
-    const page = searchParams.get('page') || '1';
-    navigate(`/category?page=${page}`);
+    navigate(`/category?${searchParams}`);
   };
 
   useEffect(() => {

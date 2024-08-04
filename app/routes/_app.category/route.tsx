@@ -86,7 +86,7 @@ function Category() {
                     <FaEye />
                   </Button>
                 </Link>
-                <Link to={`/${category.id}/delete`}>
+                <Link to={`${category.id}/delete-category?${searchParams}`}>
                   <Button
                     type="submit"
                     variant="ghost"
@@ -96,21 +96,25 @@ function Category() {
                   </Button>
                 </Link>
 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="hover:bg-yellow-300"
-                >
-                  <FaPencilAlt />
-                </Button>
+                <Link to={`${category.id}/update-category?${searchParams}`}>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="hover:bg-yellow-300"
+                  >
+                    <FaPencilAlt />
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
           ))}
-
-        {!data && <div>No categories found</div>}
       </div>
 
-      <div className="flex flex-end">
+      {data && data.length === 0 && (
+        <div className="text-center text-lg">No categories found</div>
+      )}
+
+      {data && data.length !== 0 && (
         <Pagination>
           <PaginationContent>
             <PaginationItem>
@@ -121,7 +125,7 @@ function Category() {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
-      </div>
+      )}
     </section>
   );
 }

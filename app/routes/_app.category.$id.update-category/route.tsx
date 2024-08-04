@@ -1,34 +1,65 @@
 import { Label } from '@radix-ui/react-label';
-import { Form, useActionData, useNavigate } from '@remix-run/react';
+import {
+  Form,
+  useActionData,
+  useLoaderData,
+  useNavigate,
+  useSearchParams,
+} from '@remix-run/react';
 import { useEffect, useRef } from 'react';
 import { redirect } from 'react-router';
-import { createCategory } from '~/api/endpoints/category';
-import Modal from '~/components/modal';
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
+import { updateCategory, getCategoryById } from '../../api/endpoints/category';
+import Modal from '../../components/modal';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
 
-export const action = async ({ request }: { request: Request }) => {
+export const loader = async ({
+  request,
+  params,
+}: {
+  request: Request;
+  params: { id: string };
+}) => {
+  const id = params.id;
+  const data = await getCategoryById(id, request);
+
+  return { data };
+};
+
+export const action = async ({
+  request,
+  params,
+}: {
+  request: Request;
+  params: { id: string };
+}) => {
   const formData = await request.formData();
+
+  const id = params.id;
 
   const name = formData.get('name') as string;
 
-  const response = await createCategory({ request, name });
+  const response = await updateCategory({ request, name, id });
+
+  const searchParams = new URL(request.url).searchParams;
 
   if (response.ok) {
-    return redirect('/category');
+    return redirect(`/category?${searchParams}`);
   }
 
-  return 'Failed to create category';
+  return 'Failed to Update category';
 };
 
-function CreateCategory() {
+function UpdateCategory() {
+  const loaderData = useLoaderData<{ data: { name: string } }>();
   const actionData = useActionData<string>();
   const isOpen = true;
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [searchParams] = useSearchParams();
 
   const handleClose = () => {
-    navigate('/category');
+    navigate(`/category?${searchParams}`);
   };
 
   useEffect(() => {
@@ -38,7 +69,7 @@ function CreateCategory() {
   }, [isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Edit Category">
+    <Modal isOpen={isOpen} onClose={handleClose} header="Update Category">
       <Form method="post" className="flex flex-col gap-4">
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
@@ -54,6 +85,7 @@ function CreateCategory() {
           type="text"
           name="name"
           id="name"
+          defaultValue={loaderData.data.name}
           required
         />
         <div className="flex justify-end gap-2">
@@ -64,11 +96,11 @@ function CreateCategory() {
           >
             Cancel
           </Button>
-          <Button type="submit">Create</Button>
+          <Button type="submit">Update</Button>
         </div>
       </Form>
     </Modal>
   );
 }
 
-export default CreateCategory;
+export default UpdateCategory;
