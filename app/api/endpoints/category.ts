@@ -1,17 +1,11 @@
 import { buildUrl, getEnrichedHeaders } from '../config';
 
-export const getCategory = async (page: string, request: Request) => {
+export const getCategory = async (request: Request) => {
   const headers = await getEnrichedHeaders(request);
 
-  const searchParams = new URLSearchParams();
-  searchParams.set('page', page);
-
-  const response = await fetch(
-    buildUrl(`/api/admin/categories?${searchParams}`),
-    {
-      headers,
-    },
-  );
+  const response = await fetch(buildUrl('/api/admin/categories'), {
+    headers,
+  });
 
   if (response.ok) {
     const data = await response.json();

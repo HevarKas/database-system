@@ -17,15 +17,14 @@ export const action = async ({ request }: { request: Request }) => {
 
   const name = formData.get('name') as string;
 
-  const response = await createCategory({ request, name });
+  try {
+    await createCategory({ request, name });
+    const searchParams = new URL(request.url).searchParams;
 
-  const searchParams = new URL(request.url).searchParams;
-
-  if (response.ok) {
     return redirect(`/category?${searchParams}`);
+  } catch (error) {
+    return 'Failed to create category';
   }
-
-  return 'Failed to create category';
 };
 
 function CreateCategory() {

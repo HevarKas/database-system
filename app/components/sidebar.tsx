@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { HiDocumentReport } from 'react-icons/hi';
 import { PiBooksFill } from 'react-icons/pi';
-import { MdWorkHistory } from 'react-icons/md';
+import { MdWorkHistory, MdCategory } from 'react-icons/md';
 import classNames from 'classnames';
 import { Tooltip } from 'react-tooltip';
 import AKlogo from '~/assets/AKlogo';
@@ -37,6 +37,19 @@ const Sidebar = () => {
             }
             data-tooltip-id="category-tooltip"
             data-tooltip-content="Category"
+          >
+            <MdCategory size={32} />
+          </NavLink>
+          <NavLink
+            to="/books"
+            className={({ isActive }) =>
+              classNames(
+                'flex justify-center items-center h-12 w-12 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700',
+                { 'bg-gray-300 dark:bg-gray-700': isActive },
+              )
+            }
+            data-tooltip-id="book-tooltip"
+            data-tooltip-content="Book"
           >
             <PiBooksFill size={32} />
           </NavLink>

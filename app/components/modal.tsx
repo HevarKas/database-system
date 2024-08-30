@@ -25,7 +25,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, header, children }) => {
             &times;
           </button>
         </div>
-        <div>{children}</div>
+        <div className="max-h-[500px] overflow-y-auto">{children}</div>
       </div>
     </div>
   );
