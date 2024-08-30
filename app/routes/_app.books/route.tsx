@@ -44,29 +44,45 @@ function Books() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold my-4">Books</h1>
         <Link to="create-book" className="flex items-center">
-          <Button>create Book</Button>
+          <Button>Create Book</Button>
         </Link>
       </div>
       <Table>
-        {data && data?.length === 0 && (
+        {data && data.length === 0 && (
           <TableCaption>No Books found</TableCaption>
         )}
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Invoice</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Method</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
+            <TableHead>ID</TableHead>
+            <TableHead>Barcode</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Description</TableHead>
+            <TableHead>Author</TableHead>
+            <TableHead>Translator</TableHead>
+            <TableHead>Publish Year</TableHead>
+            <TableHead>Cost</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Stock</TableHead>
+            <TableHead>Category ID</TableHead>
           </TableRow>
         </TableHeader>
-        {data && data?.length !== 0 && (
+        {data && data.length !== 0 && (
           <TableBody>
-            <TableRow>
-              <TableCell className="font-medium">INV001</TableCell>
-              <TableCell>Paid</TableCell>
-              <TableCell>Credit Card</TableCell>
-              <TableCell className="text-right">$250.00</TableCell>
-            </TableRow>
+            {data.map((book) => (
+              <TableRow key={book.id}>
+                <TableCell>{book.id}</TableCell>
+                <TableCell>{book.barcode}</TableCell>
+                <TableCell>{book.name}</TableCell>
+                <TableCell>{book.description}</TableCell>
+                <TableCell>{book.author}</TableCell>
+                <TableCell>{book.translator}</TableCell>
+                <TableCell>{book.publish_year}</TableCell>
+                <TableCell>{book.cost}</TableCell>
+                <TableCell>{book.price}</TableCell>
+                <TableCell>{book.stock}</TableCell>
+                <TableCell>{book.category}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         )}
       </Table>
