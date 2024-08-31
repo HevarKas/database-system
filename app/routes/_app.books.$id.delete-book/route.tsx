@@ -1,4 +1,3 @@
-import { Label } from '@radix-ui/react-label';
 import {
   Form,
   useActionData,
@@ -6,12 +5,10 @@ import {
   useNavigate,
   useSearchParams,
 } from '@remix-run/react';
-import { useEffect, useRef } from 'react';
 import { redirect } from 'react-router';
-import { updateCategory, getCategoryById } from '../../api/endpoints/category';
 import Modal from '../../components/modal';
 import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
+import { deleteBook, getBookById } from '~/api/endpoints/book';
 
 export const loader = async ({
   request,
@@ -21,7 +18,7 @@ export const loader = async ({
   params: { id: string };
 }) => {
   const id = params.id;
-  const data = await getCategoryById(id, request);
+  const data = await getBookById(id, request);
 
   return { data };
 };
@@ -33,61 +30,43 @@ export const action = async ({
   request: Request;
   params: { id: string };
 }) => {
-  const formData = await request.formData();
-
   const id = params.id;
 
-  const name = formData.get('name') as string;
-
-  const response = await updateCategory({ request, name, id });
+  const response = await deleteBook(id, request);
 
   const searchParams = new URL(request.url).searchParams;
 
   if (response.ok) {
-    return redirect(`/category?${searchParams}`);
+    return redirect(`/books?${searchParams}`);
   }
 
-  return 'Failed to Update category';
+  return 'Failed to Update book';
 };
 
-function UpdateCategory() {
+function DeleteBook() {
   const loaderData = useLoaderData<{ data: { name: string } }>();
   const actionData = useActionData<string>();
   const isOpen = true;
   const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [searchParams] = useSearchParams();
 
   const handleClose = () => {
-    navigate(`/category?${searchParams}`);
+    navigate(`/books?${searchParams}`);
   };
 
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen]);
-
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Update Category">
-      <Form method="post" className="flex flex-col gap-4 mx-2">
+    <Modal isOpen={isOpen} onClose={handleClose} header="Delete book">
+      <Form method="post" className="flex flex-col gap-4">
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
             {actionData}
           </div>
         )}
-        <Label htmlFor="name" className="dark:text-white">
-          Name
-        </Label>
-        <Input
-          ref={inputRef}
-          className="dark:text-black dark:bg-white"
-          type="text"
-          name="name"
-          id="name"
-          defaultValue={loaderData.data.name}
-          required
-        />
+        <p>
+          are you sure you want to delete this
+          <span className="px-1 font-semibold">{loaderData.data.name}</span>
+          book?
+        </p>
         <div className="flex justify-end gap-2">
           <Button
             type="button"
@@ -96,11 +75,11 @@ function UpdateCategory() {
           >
             Cancel
           </Button>
-          <Button type="submit">Update</Button>
+          <Button type="submit">Delete</Button>
         </div>
       </Form>
     </Modal>
   );
 }
 
-export default UpdateCategory;
+export default DeleteBook;

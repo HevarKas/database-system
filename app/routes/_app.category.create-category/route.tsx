@@ -46,7 +46,7 @@ function CreateCategory() {
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} header="Create Category">
-      <Form method="post" className="flex flex-col gap-4">
+      <Form method="post" className="flex flex-col gap-4 mx-2">
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
             {actionData}
@@ -57,7 +57,6 @@ function CreateCategory() {
         </Label>
         <Input
           ref={inputRef}
-          className="dark:text-black dark:bg-white"
           type="text"
           name="name"
           id="name"

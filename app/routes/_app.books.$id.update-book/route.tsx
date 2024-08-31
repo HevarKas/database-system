@@ -6,12 +6,12 @@ import {
   useNavigate,
   useSearchParams,
 } from '@remix-run/react';
+import { useEffect, useRef } from 'react';
 import { redirect } from 'react-router';
-import { createBook } from '~/api/endpoints/book';
-import { getCategory } from '~/api/endpoints/category';
-import Modal from '~/components/modal';
-import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
+import Modal from '../../components/modal';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { getBookById, updateBook } from '~/api/endpoints/book';
 import {
   Select,
   SelectContent,
@@ -19,22 +19,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { getCategory } from '~/api/endpoints/category';
 
 type DataType = {
   id: number;
   name: string;
 }[];
 
-// loader
-export const loader = async ({ request }: { request: Request }) => {
-  const data = await getCategory(request);
-
-  return { data };
+export type Book = {
+  id: number;
+  cover: string | null;
+  barcode: string;
+  name: string;
+  description: string;
+  category: string;
+  author: string;
+  translator: string;
+  publish_year: number;
+  cost: number;
+  price: number;
+  stock: number;
 };
 
-// action
-export const action = async ({ request }: { request: Request }) => {
+export const loader = async ({
+  request,
+  params,
+}: {
+  request: Request;
+  params: { id: string };
+}) => {
+  const id = params.id;
+  const book = await getBookById(id, request);
+  const category = await getCategory(request);
+
+  return { book, category };
+};
+
+export const action = async ({
+  request,
+  params,
+}: {
+  request: Request;
+  params: { id: string };
+}) => {
   const formData = await request.formData();
+
+  const id = params.id;
 
   const book = {
     name: formData.get('name') as string,
@@ -49,21 +79,24 @@ export const action = async ({ request }: { request: Request }) => {
     barcode: formData.get('barcode') as string,
   };
 
-  try {
-    await createBook(request, book);
-    const searchParams = new URL(request.url).searchParams;
+  const response = await updateBook(request, book, id);
 
+  const searchParams = new URL(request.url).searchParams;
+
+  if (response.ok) {
     return redirect(`/books?${searchParams}`);
-  } catch (error) {
-    return 'Failed to create category';
   }
+
+  return 'Failed to Update book';
 };
 
-function CreateCategory() {
-  const { data }: { data?: DataType } = useLoaderData();
+function UpdateBook() {
+  const { book, category }: { book?: Book; category?: DataType } =
+    useLoaderData();
   const actionData = useActionData<string>();
   const isOpen = true;
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [searchParams] = useSearchParams();
 
   const handleClose = () => {
@@ -78,8 +111,14 @@ function CreateCategory() {
     }
   };
 
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Create Category">
+    <Modal isOpen={isOpen} onClose={handleClose} header="Update Book">
       <Form method="post" className="flex flex-col gap-4 mx-3">
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
@@ -89,13 +128,21 @@ function CreateCategory() {
         <Label htmlFor="name" className="dark:text-white">
           Name
         </Label>
-        <Input type="text" name="name" id="name" maxLength={50} required />
+        <Input
+          type="text"
+          defaultValue={book?.name}
+          name="name"
+          id="name"
+          maxLength={50}
+          required
+        />
 
         <Label htmlFor="description" className="dark:text-white">
           Description
         </Label>
         <Input
           type="text"
+          defaultValue={book?.description}
           name="description"
           id="description"
           maxLength={50}
@@ -105,13 +152,21 @@ function CreateCategory() {
         <Label htmlFor="author" className="dark:text-white">
           Author
         </Label>
-        <Input type="text" name="author" id="author" maxLength={50} required />
+        <Input
+          type="text"
+          defaultValue={book?.author}
+          name="author"
+          id="author"
+          maxLength={50}
+          required
+        />
 
         <Label htmlFor="translator" className="dark:text-white">
           Translator
         </Label>
         <Input
           type="text"
+          defaultValue={book?.translator}
           name="translator"
           id="translator"
           maxLength={50}
@@ -121,37 +176,64 @@ function CreateCategory() {
         <Label htmlFor="publish_year" className="dark:text-white">
           Publish Year
         </Label>
-        <Input type="number" name="publish_year" id="publish_year" required />
+        <Input
+          type="number"
+          defaultValue={book?.publish_year}
+          name="publish_year"
+          id="publish_year"
+          required
+        />
 
         <Label htmlFor="cost" className="dark:text-white">
           Cost
         </Label>
-        <Input type="number" name="cost" id="cost" required />
+        <Input
+          type="number"
+          defaultValue={book?.cost}
+          name="cost"
+          id="cost"
+          required
+        />
 
-        <Label htmlFor="price" className="dark:text-white">
+        <Label
+          htmlFor="price"
+          defaultValue={book?.price}
+          className="dark:text-white"
+        >
           Price
         </Label>
-        <Input type="number" name="price" id="price" required />
+        <Input
+          type="number"
+          defaultValue={book?.price}
+          name="price"
+          id="price"
+          required
+        />
 
         <Label htmlFor="stock" className="dark:text-white">
           Stock
         </Label>
-        <Input type="number" name="stock" id="stock" required />
+        <Input
+          type="number"
+          defaultValue={book?.stock}
+          name="stock"
+          id="stock"
+          required
+        />
 
         <Label htmlFor="category_id" className="dark:text-white">
           Category
         </Label>
         <Select name="category_id" required>
           <SelectTrigger>
-            <SelectValue placeholder="Select Category" />
+            <SelectValue placeholder={book?.category || 'Select Category'} />
           </SelectTrigger>
           <SelectContent>
-            {data &&
-              data.map((category) => (
-                <SelectItem key={category.id} value={String(category.id)}>
-                  {category.name}
-                </SelectItem>
-              ))}
+            {category?.map((item) => (
+              <SelectItem key={item.id} value={String(item.id)}>
+                {item.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -161,6 +243,7 @@ function CreateCategory() {
         <Input
           type="text"
           name="barcode"
+          defaultValue={book?.barcode}
           id="barcode"
           maxLength={50}
           required
@@ -175,11 +258,11 @@ function CreateCategory() {
           >
             Cancel
           </Button>
-          <Button type="submit">Create</Button>
+          <Button type="submit">Update</Button>
         </div>
       </Form>
     </Modal>
   );
 }
 
-export default CreateCategory;
+export default UpdateBook;
