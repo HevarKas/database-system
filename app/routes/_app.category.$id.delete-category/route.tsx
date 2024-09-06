@@ -8,7 +8,7 @@ import {
 import { redirect } from 'react-router';
 import { deleteCategory, getCategoryById } from '../../api/endpoints/category';
 import Modal from '../../components/modal/modal';
-import { Button } from '../../components/ui/button';
+import { useRef } from 'react';
 
 export const loader = async ({
   request,
@@ -49,14 +49,32 @@ function DeleteCategory() {
   const isOpen = true;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const deleteCategoryFormRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = () => {
+    if (deleteCategoryFormRef.current) {
+      deleteCategoryFormRef.current.submit();
+    }
+  };
 
   const handleClose = () => {
     navigate(`/category?${searchParams}`);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Delete Category">
-      <Form method="post" className="flex flex-col gap-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      header="Delete Category"
+      onSubmit={handleSubmit}
+      submitLabel="Delete"
+      variant="danger"
+    >
+      <Form
+        method="post"
+        className="flex flex-col gap-4"
+        ref={deleteCategoryFormRef}
+      >
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
             {actionData}
@@ -67,16 +85,6 @@ function DeleteCategory() {
           <span className="px-1 font-semibold">{loaderData.data.name}</span>
           category?
         </p>
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            onClick={handleClose}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 focus:outline-none"
-          >
-            Cancel
-          </Button>
-          <Button type="submit">Delete</Button>
-        </div>
       </Form>
     </Modal>
   );

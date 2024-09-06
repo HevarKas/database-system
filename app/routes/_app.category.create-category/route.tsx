@@ -9,7 +9,6 @@ import { useEffect, useRef } from 'react';
 import { redirect } from 'react-router';
 import { createCategory } from '~/api/endpoints/category';
 import Modal from '~/components/modal/modal';
-import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 
 export const action = async ({ request }: { request: Request }) => {
@@ -32,10 +31,17 @@ function CreateCategory() {
   const isOpen = true;
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const createCategoryFormRef = useRef<HTMLFormElement>(null);
   const [searchParams] = useSearchParams();
 
   const handleClose = () => {
     navigate(`/category?${searchParams}`);
+  };
+
+  const handleSubmit = () => {
+    if (createCategoryFormRef.current) {
+      createCategoryFormRef.current.submit();
+    }
   };
 
   useEffect(() => {
@@ -45,8 +51,19 @@ function CreateCategory() {
   }, [isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Create Category">
-      <Form method="post" className="flex flex-col gap-4 mx-2">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      header="Create Category"
+      onSubmit={handleSubmit}
+      submitLabel="Create"
+      variant="success"
+    >
+      <Form
+        method="post"
+        className="flex flex-col gap-4 mx-2"
+        ref={createCategoryFormRef}
+      >
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
             {actionData}
@@ -63,16 +80,6 @@ function CreateCategory() {
           maxLength={50}
           required
         />
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            onClick={handleClose}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 focus:outline-none"
-          >
-            Cancel
-          </Button>
-          <Button type="submit">Create</Button>
-        </div>
       </Form>
     </Modal>
   );

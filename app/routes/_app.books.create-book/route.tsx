@@ -6,11 +6,11 @@ import {
   useNavigate,
   useSearchParams,
 } from '@remix-run/react';
+import { useRef } from 'react';
 import { redirect } from 'react-router';
 import { createBook } from '~/api/endpoints/book';
 import { getCategory } from '~/api/endpoints/category';
 import Modal from '~/components/modal/modal';
-import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import {
   Select,
@@ -25,14 +25,12 @@ type DataType = {
   name: string;
 }[];
 
-// loader
 export const loader = async ({ request }: { request: Request }) => {
   const data = await getCategory(request);
 
   return { data };
 };
 
-// action
 export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();
 
@@ -65,6 +63,7 @@ function CreateCategory() {
   const isOpen = true;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const createBookRef = useRef<HTMLFormElement>(null);
 
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
@@ -78,9 +77,25 @@ function CreateCategory() {
     }
   };
 
+  const onSubmit = () => {
+    if (createBookRef.current) {
+      createBookRef.current.requestSubmit();
+    }
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Create Category">
-      <Form method="post" className="flex flex-col gap-4 mx-3">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      header="Create Category"
+      onSubmit={onSubmit}
+      submitLabel="Create"
+    >
+      <Form
+        method="post"
+        className="flex flex-col gap-4 mx-3"
+        ref={createBookRef}
+      >
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
             {actionData}
@@ -166,17 +181,6 @@ function CreateCategory() {
           required
           onKeyDown={handleBarcodeKeyDown}
         />
-
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            onClick={handleClose}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 focus:outline-none"
-          >
-            Cancel
-          </Button>
-          <Button type="submit">Create</Button>
-        </div>
       </Form>
     </Modal>
   );

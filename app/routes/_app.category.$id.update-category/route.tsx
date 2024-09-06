@@ -10,7 +10,6 @@ import { useEffect, useRef } from 'react';
 import { redirect } from 'react-router';
 import { updateCategory, getCategoryById } from '../../api/endpoints/category';
 import Modal from '../../components/modal/modal';
-import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 
 export const loader = async ({
@@ -57,6 +56,13 @@ function UpdateCategory() {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchParams] = useSearchParams();
+  const updateCategoryFormRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = () => {
+    if (updateCategoryFormRef.current) {
+      updateCategoryFormRef.current.submit();
+    }
+  };
 
   const handleClose = () => {
     navigate(`/category?${searchParams}`);
@@ -69,8 +75,19 @@ function UpdateCategory() {
   }, [isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Update Category">
-      <Form method="post" className="flex flex-col gap-4 mx-2">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      header="Update Category"
+      onSubmit={handleSubmit}
+      submitLabel="Update"
+      variant="warning"
+    >
+      <Form
+        method="post"
+        className="flex flex-col gap-4 mx-2"
+        ref={updateCategoryFormRef}
+      >
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
             {actionData}
@@ -88,16 +105,6 @@ function UpdateCategory() {
           defaultValue={loaderData.data.name}
           required
         />
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            onClick={handleClose}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 focus:outline-none"
-          >
-            Cancel
-          </Button>
-          <Button type="submit">Update</Button>
-        </div>
       </Form>
     </Modal>
   );

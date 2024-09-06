@@ -9,7 +9,6 @@ import {
 import { useEffect, useRef } from 'react';
 import { redirect } from 'react-router';
 import Modal from '../../components/modal/modal';
-import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { getBookById, updateBook } from '~/api/endpoints/book';
 import {
@@ -98,6 +97,13 @@ function UpdateBook() {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [searchParams] = useSearchParams();
+  const updateBookFormRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = () => {
+    if (updateBookFormRef.current) {
+      updateBookFormRef.current.submit();
+    }
+  };
 
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
@@ -118,8 +124,19 @@ function UpdateBook() {
   }, [isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Update Book">
-      <Form method="post" className="flex flex-col gap-4 mx-3">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      header="Update Book"
+      onSubmit={handleSubmit}
+      submitLabel="Update"
+      variant="warning"
+    >
+      <Form
+        method="post"
+        className="flex flex-col gap-4 mx-3"
+        ref={updateBookFormRef}
+      >
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
             {actionData}
@@ -249,17 +266,6 @@ function UpdateBook() {
           required
           onKeyDown={handleBarcodeKeyDown}
         />
-
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            onClick={handleClose}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 focus:outline-none"
-          >
-            Cancel
-          </Button>
-          <Button type="submit">Update</Button>
-        </div>
       </Form>
     </Modal>
   );

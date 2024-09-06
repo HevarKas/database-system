@@ -7,8 +7,8 @@ import {
 } from '@remix-run/react';
 import { redirect } from 'react-router';
 import Modal from '../../components/modal/modal';
-import { Button } from '../../components/ui/button';
 import { deleteBook, getBookById } from '~/api/endpoints/book';
+import { useRef } from 'react';
 
 export const loader = async ({
   request,
@@ -49,14 +49,32 @@ function DeleteBook() {
   const isOpen = true;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const deleteBookFormRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = () => {
+    if (deleteBookFormRef.current) {
+      deleteBookFormRef.current.submit();
+    }
+  };
 
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} header="Delete book">
-      <Form method="post" className="flex flex-col gap-4">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      header="Delete book"
+      onSubmit={handleSubmit}
+      submitLabel="Delete"
+      variant="danger"
+    >
+      <Form
+        method="post"
+        className="flex flex-col gap-4"
+        ref={deleteBookFormRef}
+      >
         {actionData && (
           <div className="bg-red-100 text-red-800 p-4 rounded">
             {actionData}
@@ -67,16 +85,6 @@ function DeleteBook() {
           <span className="px-1 font-semibold">{loaderData.data.name}</span>
           book?
         </p>
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            onClick={handleClose}
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 focus:outline-none"
-          >
-            Cancel
-          </Button>
-          <Button type="submit">Delete</Button>
-        </div>
       </Form>
     </Modal>
   );
