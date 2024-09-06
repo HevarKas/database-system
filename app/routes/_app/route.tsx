@@ -1,8 +1,10 @@
-import { Outlet, redirect } from '@remix-run/react';
 import { useState } from 'react';
-import Header from '~/components/header';
-import LogoutComponent from '~/components/pages/logout';
-import Sidebar from '~/components/sidebar';
+import { Outlet, redirect } from '@remix-run/react';
+
+import Header from '~/components/header/header';
+import Sidebar from '~/components/sidebar/sidebar';
+import LogoutComponent from '~/components/header/logoutModal';
+
 import { getToken } from '~/lib/auth/cookies';
 
 export const loader = async ({ request }: { request: Request }) => {

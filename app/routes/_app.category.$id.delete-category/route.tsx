@@ -7,7 +7,7 @@ import {
 } from '@remix-run/react';
 import { redirect } from 'react-router';
 import { deleteCategory, getCategoryById } from '../../api/endpoints/category';
-import Modal from '../../components/modal';
+import Modal from '../../components/modal/modal';
 import { Button } from '../../components/ui/button';
 
 export const loader = async ({

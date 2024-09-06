@@ -8,7 +8,7 @@ import {
 import { useEffect, useRef } from 'react';
 import { redirect } from 'react-router';
 import { createCategory } from '~/api/endpoints/category';
-import Modal from '~/components/modal';
+import Modal from '~/components/modal/modal';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 

@@ -6,7 +6,7 @@ import {
   useSearchParams,
 } from '@remix-run/react';
 import { redirect } from 'react-router';
-import Modal from '../../components/modal';
+import Modal from '../../components/modal/modal';
 import { Button } from '../../components/ui/button';
 import { deleteBook, getBookById } from '~/api/endpoints/book';
 

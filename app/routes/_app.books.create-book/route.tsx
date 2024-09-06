@@ -9,7 +9,7 @@ import {
 import { redirect } from 'react-router';
 import { createBook } from '~/api/endpoints/book';
 import { getCategory } from '~/api/endpoints/category';
-import Modal from '~/components/modal';
+import Modal from '~/components/modal/modal';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import {
