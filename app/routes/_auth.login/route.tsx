@@ -21,19 +21,17 @@ export const action = async ({ request }: { request: Request }) => {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
-  const response = await getAccessToken({ request, email, password });
-
-  if (response.ok) {
-    const { data } = await response.json();
+  try {
+    const loginData = await getAccessToken({ request, email, password });
 
     return redirect('/dashboard', {
       headers: {
-        'Set-Cookie': await tokenCookie.serialize(data.token),
+        'Set-Cookie': await tokenCookie.serialize(loginData.data.token),
       },
     });
+  } catch (error) {
+    throw new Error('failed to login');
   }
-
-  return 'Invalid credentials';
 };
 
 function Login() {

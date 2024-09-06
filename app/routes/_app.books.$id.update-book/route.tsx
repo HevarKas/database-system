@@ -6,7 +6,7 @@ import {
   useNavigate,
   useSearchParams,
 } from '@remix-run/react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { redirect } from 'react-router';
 import Modal from '../../components/modal/modal';
 import { Input } from '../../components/ui/input';
@@ -95,13 +95,12 @@ function UpdateBook() {
   const actionData = useActionData<string>();
   const isOpen = true;
   const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [searchParams] = useSearchParams();
   const updateBookFormRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = () => {
     if (updateBookFormRef.current) {
-      updateBookFormRef.current.submit();
+      updateBookFormRef.current.requestSubmit();
     }
   };
 
@@ -116,12 +115,6 @@ function UpdateBook() {
       event.preventDefault();
     }
   };
-
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen]);
 
   return (
     <Modal

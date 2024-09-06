@@ -18,9 +18,16 @@ export const getAccessToken = async ({
   body.set('email', email);
   body.set('password', password);
 
-  return fetch(buildUrl('/api/admin/token/create'), {
+  const response = await fetch(buildUrl('/api/admin/token/create'), {
     body,
     method: 'post',
     headers,
   });
+
+  if (response.status !== 200) {
+    const errorResponse = await response.json();
+    throw errorResponse;
+  }
+
+  return response.json();
 };

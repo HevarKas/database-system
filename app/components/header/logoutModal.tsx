@@ -12,7 +12,7 @@ const LogoutComponent = ({ isOpen, onClose }: LogoutModalProps) => {
 
   const handleSubmit = () => {
     if (logoutFormRef.current) {
-      logoutFormRef.current.submit();
+      logoutFormRef.current.requestSubmit();
     }
   };
 

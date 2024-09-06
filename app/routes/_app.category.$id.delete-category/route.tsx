@@ -53,7 +53,7 @@ function DeleteCategory() {
 
   const handleSubmit = () => {
     if (deleteCategoryFormRef.current) {
-      deleteCategoryFormRef.current.submit();
+      deleteCategoryFormRef.current.requestSubmit();
     }
   };
 

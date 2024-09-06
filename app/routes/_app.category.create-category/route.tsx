@@ -1,11 +1,6 @@
 import { Label } from '@radix-ui/react-label';
-import {
-  Form,
-  useActionData,
-  useNavigate,
-  useSearchParams,
-} from '@remix-run/react';
-import { useEffect, useRef } from 'react';
+import { Form, useNavigate, useSearchParams } from '@remix-run/react';
+import { useRef } from 'react';
 import { redirect } from 'react-router';
 import { createCategory } from '~/api/endpoints/category';
 import Modal from '~/components/modal/modal';
@@ -27,10 +22,8 @@ export const action = async ({ request }: { request: Request }) => {
 };
 
 function CreateCategory() {
-  const actionData = useActionData<string>();
   const isOpen = true;
   const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement>(null);
   const createCategoryFormRef = useRef<HTMLFormElement>(null);
   const [searchParams] = useSearchParams();
 
@@ -40,15 +33,9 @@ function CreateCategory() {
 
   const handleSubmit = () => {
     if (createCategoryFormRef.current) {
-      createCategoryFormRef.current.submit();
+      createCategoryFormRef.current.requestSubmit();
     }
   };
-
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen]);
 
   return (
     <Modal
@@ -64,22 +51,10 @@ function CreateCategory() {
         className="flex flex-col gap-4 mx-2"
         ref={createCategoryFormRef}
       >
-        {actionData && (
-          <div className="bg-red-100 text-red-800 p-4 rounded">
-            {actionData}
-          </div>
-        )}
         <Label htmlFor="name" className="dark:text-white">
           Name
         </Label>
-        <Input
-          ref={inputRef}
-          type="text"
-          name="name"
-          id="name"
-          maxLength={50}
-          required
-        />
+        <Input type="text" name="name" id="name" maxLength={50} required />
       </Form>
     </Modal>
   );

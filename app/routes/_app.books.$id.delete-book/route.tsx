@@ -53,7 +53,7 @@ function DeleteBook() {
 
   const handleSubmit = () => {
     if (deleteBookFormRef.current) {
-      deleteBookFormRef.current.submit();
+      deleteBookFormRef.current.requestSubmit();
     }
   };
 

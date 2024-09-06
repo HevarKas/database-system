@@ -6,7 +6,7 @@ import {
   useNavigate,
   useSearchParams,
 } from '@remix-run/react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { redirect } from 'react-router';
 import { updateCategory, getCategoryById } from '../../api/endpoints/category';
 import Modal from '../../components/modal/modal';
@@ -54,25 +54,18 @@ function UpdateCategory() {
   const actionData = useActionData<string>();
   const isOpen = true;
   const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [searchParams] = useSearchParams();
   const updateCategoryFormRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = () => {
     if (updateCategoryFormRef.current) {
-      updateCategoryFormRef.current.submit();
+      updateCategoryFormRef.current.requestSubmit();
     }
   };
 
   const handleClose = () => {
     navigate(`/category?${searchParams}`);
   };
-
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [isOpen]);
 
   return (
     <Modal
@@ -97,7 +90,6 @@ function UpdateCategory() {
           Name
         </Label>
         <Input
-          ref={inputRef}
           className="dark:text-black dark:bg-white"
           type="text"
           name="name"
