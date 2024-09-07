@@ -7,13 +7,27 @@ export const getCategory = async (request: Request) => {
     headers,
   });
 
-  if (response.ok) {
-    const data = await response.json();
-
-    return data;
+  if (response.status !== 200) {
+    const errorResponse = await response.json();
+    throw errorResponse;
   }
 
-  return null;
+  return response.json();
+};
+
+export const getCategoryById = async (id: string, request: Request) => {
+  const headers = await getEnrichedHeaders(request);
+
+  const response = await fetch(buildUrl(`/api/admin/categories/${id}`), {
+    headers,
+  });
+
+  if (response.status !== 200) {
+    const errorResponse = await response.json();
+    throw errorResponse;
+  }
+
+  return response.json();
 };
 
 export const createCategory = async ({
@@ -31,8 +45,9 @@ export const createCategory = async ({
     body: JSON.stringify({ name }),
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to create category');
+  if (response.status !== 200) {
+    const errorResponse = await response.json();
+    throw errorResponse;
   }
 
   return response;
@@ -56,27 +71,12 @@ export const updateCategory = async ({
     body: JSON.stringify({ name, _method }),
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to update category');
+  if (response.status !== 200) {
+    const errorResponse = await response.json();
+    throw errorResponse;
   }
 
   return response;
-};
-
-export const getCategoryById = async (id: string, request: Request) => {
-  const headers = await getEnrichedHeaders(request);
-
-  const response = await fetch(buildUrl(`/api/admin/categories/${id}`), {
-    headers,
-  });
-
-  if (response.ok) {
-    const data = await response.json();
-
-    return data;
-  }
-
-  return null;
 };
 
 export const deleteCategory = async (id: string, request: Request) => {
@@ -87,8 +87,9 @@ export const deleteCategory = async (id: string, request: Request) => {
     headers,
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to delete category');
+  if (response.status !== 200) {
+    const errorResponse = await response.json();
+    throw errorResponse;
   }
 
   return response;

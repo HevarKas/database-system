@@ -1,14 +1,18 @@
+import { useEffect, useRef } from 'react';
 import {
   Form,
   useActionData,
   useLoaderData,
   useNavigate,
-  useSearchParams,
 } from '@remix-run/react';
-import { redirect } from 'react-router';
-import { deleteCategory, getCategoryById } from '../../api/endpoints/category';
-import Modal from '../../components/modal/modal';
-import { useRef } from 'react';
+import { toast } from 'react-toastify';
+
+import Modal from '~/components/modal/modal';
+
+import { tostActionType } from '~/shared/types/toast';
+import { LoaderDataType } from '~/shared/types/pages/category';
+
+import { deleteCategory, getCategoryById } from '~/api/endpoints/category';
 
 export const loader = async ({
   request,
@@ -32,24 +36,30 @@ export const action = async ({
 }) => {
   const id = params.id;
 
-  const response = await deleteCategory(id, request);
+  try {
+    await deleteCategory(id, request);
 
-  const searchParams = new URL(request.url).searchParams;
-
-  if (response.ok) {
-    return redirect(`/category?${searchParams}`);
+    return {
+      type: 'success',
+      toast: 'Category deleted successfully!',
+    };
+  } catch {
+    return {
+      type: 'error',
+      toast: 'Failed to delete category.',
+    };
   }
-
-  return 'Failed to Update category';
 };
 
 function DeleteCategory() {
-  const loaderData = useLoaderData<{ data: { name: string } }>();
-  const actionData = useActionData<string>();
-  const isOpen = true;
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const actionData = useActionData<tostActionType>();
+  const loaderData = useLoaderData<LoaderDataType>();
   const deleteCategoryFormRef = useRef<HTMLFormElement>(null);
+
+  const handleClose = () => {
+    navigate('/category');
+  };
 
   const handleSubmit = () => {
     if (deleteCategoryFormRef.current) {
@@ -57,13 +67,20 @@ function DeleteCategory() {
     }
   };
 
-  const handleClose = () => {
-    navigate(`/category?${searchParams}`);
-  };
+  useEffect(() => {
+    if (actionData) {
+      if (actionData.type === 'success') {
+        toast.success(actionData.toast);
+        navigate('/category');
+      } else {
+        toast.error(actionData.toast);
+      }
+    }
+  }, [actionData, navigate]);
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={true}
       onClose={handleClose}
       header="Delete Category"
       onSubmit={handleSubmit}
@@ -75,11 +92,6 @@ function DeleteCategory() {
         className="flex flex-col gap-4"
         ref={deleteCategoryFormRef}
       >
-        {actionData && (
-          <div className="bg-red-100 text-red-800 p-4 rounded">
-            {actionData}
-          </div>
-        )}
         <p>
           are you sure you want to delete this
           <span className="px-1 font-semibold">{loaderData.data.name}</span>

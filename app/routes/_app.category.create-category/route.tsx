@@ -1,45 +1,60 @@
-import { Label } from '@radix-ui/react-label';
-import { Form, useNavigate, useSearchParams } from '@remix-run/react';
-import { useRef } from 'react';
-import { redirect } from 'react-router';
-import { createCategory } from '~/api/endpoints/category';
-import Modal from '~/components/modal/modal';
+import { useEffect, useRef } from 'react';
+import { Form, useActionData, useNavigate } from '@remix-run/react';
+import { toast } from 'react-toastify';
+
+import { Label } from '~/components/ui/label';
 import { Input } from '~/components/ui/input';
+import Modal from '~/components/modal/modal';
+
+import { tostActionType } from '~/shared/types/toast';
+
+import { createCategory } from '~/api/endpoints/category';
 
 export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();
-
   const name = formData.get('name') as string;
 
   try {
     await createCategory({ request, name });
-    const searchParams = new URL(request.url).searchParams;
-
-    return redirect(`/category?${searchParams}`);
-  } catch (error) {
-    return 'Failed to create category';
+    return {
+      type: 'success',
+      toast: 'Category created successfully!',
+    };
+  } catch {
+    return {
+      type: 'error',
+      toast: 'Failed to create category.',
+    };
   }
 };
 
 function CreateCategory() {
-  const isOpen = true;
   const navigate = useNavigate();
+  const actionData = useActionData<tostActionType>();
   const createCategoryFormRef = useRef<HTMLFormElement>(null);
-  const [searchParams] = useSearchParams();
 
   const handleClose = () => {
-    navigate(`/category?${searchParams}`);
+    navigate('/category');
   };
 
   const handleSubmit = () => {
-    if (createCategoryFormRef.current) {
-      createCategoryFormRef.current.requestSubmit();
-    }
+    createCategoryFormRef.current?.requestSubmit();
   };
+
+  useEffect(() => {
+    if (actionData) {
+      if (actionData.type === 'success') {
+        toast.success(actionData.toast);
+        navigate('/category');
+      } else {
+        toast.error(actionData.toast);
+      }
+    }
+  }, [actionData, navigate]);
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={true}
       onClose={handleClose}
       header="Create Category"
       onSubmit={handleSubmit}
@@ -51,9 +66,7 @@ function CreateCategory() {
         className="flex flex-col gap-4 mx-2"
         ref={createCategoryFormRef}
       >
-        <Label htmlFor="name" className="dark:text-white">
-          Name
-        </Label>
+        <Label htmlFor="name">Name</Label>
         <Input type="text" name="name" id="name" maxLength={50} required />
       </Form>
     </Modal>

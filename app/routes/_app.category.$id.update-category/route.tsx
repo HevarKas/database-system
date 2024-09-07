@@ -1,16 +1,20 @@
-import { Label } from '@radix-ui/react-label';
+import { useEffect, useRef } from 'react';
 import {
   Form,
   useActionData,
   useLoaderData,
   useNavigate,
-  useSearchParams,
 } from '@remix-run/react';
-import { useRef } from 'react';
-import { redirect } from 'react-router';
-import { updateCategory, getCategoryById } from '../../api/endpoints/category';
-import Modal from '../../components/modal/modal';
-import { Input } from '../../components/ui/input';
+import { toast } from 'react-toastify';
+
+import { Label } from '~/components/ui/label';
+import { Input } from '~/components/ui/input';
+import Modal from '~/components/modal/modal';
+
+import { tostActionType } from '~/shared/types/toast';
+import { LoaderDataType } from '~/shared/types/pages/category';
+
+import { updateCategory, getCategoryById } from '~/api/endpoints/category';
 
 export const loader = async ({
   request,
@@ -38,24 +42,30 @@ export const action = async ({
 
   const name = formData.get('name') as string;
 
-  const response = await updateCategory({ request, name, id });
+  try {
+    await updateCategory({ request, name, id });
 
-  const searchParams = new URL(request.url).searchParams;
-
-  if (response.ok) {
-    return redirect(`/category?${searchParams}`);
+    return {
+      type: 'success',
+      toast: 'Category updated successfully!',
+    };
+  } catch {
+    return {
+      type: 'error',
+      toast: 'Failed to update category.',
+    };
   }
-
-  return 'Failed to Update category';
 };
 
 function UpdateCategory() {
-  const loaderData = useLoaderData<{ data: { name: string } }>();
-  const actionData = useActionData<string>();
-  const isOpen = true;
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const actionData = useActionData<tostActionType>();
+  const loaderData = useLoaderData<LoaderDataType>();
   const updateCategoryFormRef = useRef<HTMLFormElement>(null);
+
+  const handleClose = () => {
+    navigate('/category');
+  };
 
   const handleSubmit = () => {
     if (updateCategoryFormRef.current) {
@@ -63,13 +73,20 @@ function UpdateCategory() {
     }
   };
 
-  const handleClose = () => {
-    navigate(`/category?${searchParams}`);
-  };
+  useEffect(() => {
+    if (actionData) {
+      if (actionData.type === 'success') {
+        toast.success(actionData.toast);
+        navigate('/category');
+      } else {
+        toast.error(actionData.toast);
+      }
+    }
+  }, [actionData, navigate]);
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={true}
       onClose={handleClose}
       header="Update Category"
       onSubmit={handleSubmit}
@@ -81,19 +98,13 @@ function UpdateCategory() {
         className="flex flex-col gap-4 mx-2"
         ref={updateCategoryFormRef}
       >
-        {actionData && (
-          <div className="bg-red-100 text-red-800 p-4 rounded">
-            {actionData}
-          </div>
-        )}
-        <Label htmlFor="name" className="dark:text-white">
-          Name
-        </Label>
+        <Label htmlFor="name">Name</Label>
         <Input
           className="dark:text-black dark:bg-white"
           type="text"
           name="name"
           id="name"
+          maxLength={50}
           defaultValue={loaderData.data.name}
           required
         />
