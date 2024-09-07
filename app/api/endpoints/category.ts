@@ -1,4 +1,4 @@
-import { buildUrl, getEnrichedHeaders } from '../config';
+import { buildUrl, getEnrichedHeaders } from '~/api/config';
 
 export const getCategory = async (request: Request) => {
   const headers = await getEnrichedHeaders(request);
@@ -37,7 +37,9 @@ export const createCategory = async ({
   request: Request;
   name: string;
 }) => {
-  const headers = await getEnrichedHeaders(request, true);
+  const headers = await getEnrichedHeaders(request, {
+    contentType: 'application/json',
+  });
 
   const response = await fetch(buildUrl('/api/admin/categories'), {
     method: 'post',
@@ -62,7 +64,9 @@ export const updateCategory = async ({
   name: string;
   id: string;
 }) => {
-  const headers = await getEnrichedHeaders(request, true);
+  const headers = await getEnrichedHeaders(request, {
+    contentType: 'application/json',
+  });
 
   const _method = 'PATCH';
   const response = await fetch(buildUrl(`/api/admin/categories/${id}`), {
@@ -80,7 +84,9 @@ export const updateCategory = async ({
 };
 
 export const deleteCategory = async (id: string, request: Request) => {
-  const headers = await getEnrichedHeaders(request, true);
+  const headers = await getEnrichedHeaders(request, {
+    contentType: 'application/json',
+  });
 
   const response = await fetch(buildUrl(`/api/admin/categories/${id}`), {
     method: 'delete',

@@ -1,4 +1,4 @@
-import { Label } from '@radix-ui/react-label';
+import { useEffect, useRef } from 'react';
 import {
   Form,
   useActionData,
@@ -6,11 +6,11 @@ import {
   useNavigate,
   useSearchParams,
 } from '@remix-run/react';
-import { useRef } from 'react';
-import { redirect } from 'react-router';
-import Modal from '../../components/modal/modal';
-import { Input } from '../../components/ui/input';
-import { getBookById, updateBook } from '~/api/endpoints/book';
+import { toast } from 'react-toastify';
+
+import { Label } from '~/components/ui/label';
+import { Input } from '~/components/ui/input';
+import Modal from '~/components/modal/modal';
 import {
   Select,
   SelectContent,
@@ -18,27 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+
+import { tostActionType } from '~/shared/types/toast';
+import { BookGetDataType } from '~/shared/types/pages/book';
+import { CategoryGetDataType } from '~/shared/types/pages/category';
+
 import { getCategory } from '~/api/endpoints/category';
-
-type DataType = {
-  id: number;
-  name: string;
-}[];
-
-export type Book = {
-  id: number;
-  cover: string | null;
-  barcode: string;
-  name: string;
-  description: string;
-  category: string;
-  author: string;
-  translator: string;
-  publish_year: number;
-  cost: number;
-  price: number;
-  stock: number;
-};
+import { getBookById, updateBook } from '~/api/endpoints/book';
 
 export const loader = async ({
   request,
@@ -67,7 +53,7 @@ export const action = async ({
 
   const book = {
     name: formData.get('name') as string,
-    description: formData.get('description') as string,
+    description: 'Soon will be deleted',
     author: formData.get('author') as string,
     translator: formData.get('translator') as string,
     publish_year: Number(formData.get('publish_year')),
@@ -78,34 +64,42 @@ export const action = async ({
     barcode: formData.get('barcode') as string,
   };
 
-  const response = await updateBook(request, book, id);
+  try {
+    await updateBook(request, book, id);
 
-  const searchParams = new URL(request.url).searchParams;
-
-  if (response.ok) {
-    return redirect(`/books?${searchParams}`);
+    return {
+      type: 'success',
+      toast: 'Book updated successfully!',
+    };
+  } catch {
+    return {
+      type: 'error',
+      toast: 'Failed to update book.',
+    };
   }
-
-  return 'Failed to Update book';
 };
 
 function UpdateBook() {
-  const { book, category }: { book?: Book; category?: DataType } =
-    useLoaderData();
-  const actionData = useActionData<string>();
-  const isOpen = true;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const actionData = useActionData<tostActionType>();
+  const {
+    book,
+    category,
+  }: { book?: BookGetDataType; category?: CategoryGetDataType } =
+    useLoaderData();
   const updateBookFormRef = useRef<HTMLFormElement>(null);
+
+  console.log('book', book);
+
+  const handleClose = () => {
+    navigate(`/books?${searchParams}`);
+  };
 
   const handleSubmit = () => {
     if (updateBookFormRef.current) {
       updateBookFormRef.current.requestSubmit();
     }
-  };
-
-  const handleClose = () => {
-    navigate(`/books?${searchParams}`);
   };
 
   const handleBarcodeKeyDown = (
@@ -116,149 +110,193 @@ function UpdateBook() {
     }
   };
 
+  useEffect(() => {
+    if (actionData) {
+      if (actionData.type === 'success') {
+        toast.success(actionData.toast);
+        navigate(`/books?${searchParams}`);
+      } else {
+        toast.error(actionData.toast);
+      }
+    }
+  }, [actionData, navigate, searchParams]);
+
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={true}
       onClose={handleClose}
       header="Update Book"
       onSubmit={handleSubmit}
       submitLabel="Update"
       variant="warning"
     >
-      <Form
-        method="post"
-        className="flex flex-col gap-4 mx-3"
-        ref={updateBookFormRef}
-      >
-        {actionData && (
-          <div className="bg-red-100 text-red-800 p-4 rounded">
-            {actionData}
+      <Form method="post" className="space-y-6 p-2" ref={updateBookFormRef}>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <Label
+              htmlFor="name"
+              className="text-lg font-semibold dark:text-white"
+            >
+              Name
+            </Label>
+            <Input
+              type="text"
+              defaultValue={book?.name}
+              name="name"
+              id="name"
+              maxLength={50}
+              required
+              className="p-3 border rounded-md"
+            />
           </div>
-        )}
-        <Label htmlFor="name" className="dark:text-white">
-          Name
-        </Label>
-        <Input
-          type="text"
-          defaultValue={book?.name}
-          name="name"
-          id="name"
-          maxLength={50}
-          required
-        />
+          <div>
+            <Label
+              htmlFor="author"
+              className="text-lg font-semibold dark:text-white"
+            >
+              Author
+            </Label>
+            <Input
+              type="text"
+              defaultValue={book?.author}
+              name="author"
+              id="author"
+              maxLength={50}
+              required
+              className="p-3 border rounded-md"
+            />
+          </div>
+        </div>
 
-        <Label htmlFor="description" className="dark:text-white">
-          Description
-        </Label>
-        <Input
-          type="text"
-          defaultValue={book?.description}
-          name="description"
-          id="description"
-          maxLength={50}
-          required
-        />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <Label
+              htmlFor="translator"
+              className="text-lg font-semibold dark:text-white"
+            >
+              Translator
+            </Label>
+            <Input
+              type="text"
+              defaultValue={book?.translator}
+              name="translator"
+              id="translator"
+              maxLength={50}
+              required
+              className="p-3 border rounded-md"
+            />
+          </div>
+          <div>
+            <Label
+              htmlFor="publish_year"
+              className="text-lg font-semibold dark:text-white"
+            >
+              Publish Year
+            </Label>
+            <Input
+              type="number"
+              defaultValue={book?.publish_year}
+              name="publish_year"
+              id="publish_year"
+              required
+              className="p-3 border rounded-md"
+            />
+          </div>
+        </div>
 
-        <Label htmlFor="author" className="dark:text-white">
-          Author
-        </Label>
-        <Input
-          type="text"
-          defaultValue={book?.author}
-          name="author"
-          id="author"
-          maxLength={50}
-          required
-        />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div>
+            <Label
+              htmlFor="cost"
+              className="text-lg font-semibold dark:text-white"
+            >
+              Cost
+            </Label>
+            <Input
+              type="number"
+              defaultValue={book?.cost}
+              name="cost"
+              id="cost"
+              required
+              className="p-3 border rounded-md"
+            />
+          </div>
+          <div>
+            <Label
+              htmlFor="price"
+              className="text-lg font-semibold dark:text-white"
+            >
+              Price
+            </Label>
+            <Input
+              type="number"
+              defaultValue={book?.price}
+              name="price"
+              id="price"
+              required
+              className="p-3 border rounded-md"
+            />
+          </div>
+          <div>
+            <Label
+              htmlFor="stock"
+              className="text-lg font-semibold dark:text-white"
+            >
+              Stock
+            </Label>
+            <Input
+              type="number"
+              defaultValue={book?.stock}
+              name="stock"
+              id="stock"
+              required
+              className="p-3 border rounded-md"
+            />
+          </div>
+        </div>
 
-        <Label htmlFor="translator" className="dark:text-white">
-          Translator
-        </Label>
-        <Input
-          type="text"
-          defaultValue={book?.translator}
-          name="translator"
-          id="translator"
-          maxLength={50}
-          required
-        />
-
-        <Label htmlFor="publish_year" className="dark:text-white">
-          Publish Year
-        </Label>
-        <Input
-          type="number"
-          defaultValue={book?.publish_year}
-          name="publish_year"
-          id="publish_year"
-          required
-        />
-
-        <Label htmlFor="cost" className="dark:text-white">
-          Cost
-        </Label>
-        <Input
-          type="number"
-          defaultValue={book?.cost}
-          name="cost"
-          id="cost"
-          required
-        />
-
-        <Label
-          htmlFor="price"
-          defaultValue={book?.price}
-          className="dark:text-white"
-        >
-          Price
-        </Label>
-        <Input
-          type="number"
-          defaultValue={book?.price}
-          name="price"
-          id="price"
-          required
-        />
-
-        <Label htmlFor="stock" className="dark:text-white">
-          Stock
-        </Label>
-        <Input
-          type="number"
-          defaultValue={book?.stock}
-          name="stock"
-          id="stock"
-          required
-        />
-
-        <Label htmlFor="category_id" className="dark:text-white">
-          Category
-        </Label>
-        <Select name="category_id" required>
-          <SelectTrigger>
-            <SelectValue placeholder={book?.category || 'Select Category'} />
-          </SelectTrigger>
-          <SelectContent>
-            {category?.map((item) => (
-              <SelectItem key={item.id} value={String(item.id)}>
-                {item.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Label htmlFor="barcode" className="dark:text-white">
-          Barcode
-        </Label>
-        <Input
-          type="text"
-          name="barcode"
-          defaultValue={book?.barcode}
-          id="barcode"
-          maxLength={50}
-          required
-          onKeyDown={handleBarcodeKeyDown}
-        />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <Label
+              htmlFor="category_id"
+              className="text-lg font-semibold dark:text-white"
+            >
+              Category
+            </Label>
+            <Select name="category_id" required>
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={book?.category || 'Select Category'}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {category?.map((item) => (
+                  <SelectItem key={item.id} value={String(item.id)}>
+                    {item.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label
+              htmlFor="barcode"
+              className="text-lg font-semibold dark:text-white"
+            >
+              Barcode
+            </Label>
+            <Input
+              type="text"
+              name="barcode"
+              defaultValue={book?.barcode}
+              id="barcode"
+              maxLength={50}
+              required
+              onKeyDown={handleBarcodeKeyDown}
+              className="p-3 border rounded-md"
+            />
+          </div>
+        </div>
       </Form>
     </Modal>
   );

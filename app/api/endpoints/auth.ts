@@ -1,6 +1,6 @@
 import { buildUrl, getEnrichedHeaders } from '../config';
 
-type loginArgs = {
+type loginType = {
   email: string;
   password: string;
   request: Request;
@@ -10,7 +10,7 @@ export const getAccessToken = async ({
   request,
   email,
   password,
-}: loginArgs) => {
+}: loginType) => {
   const headers = await getEnrichedHeaders(request);
 
   const body = new URLSearchParams();

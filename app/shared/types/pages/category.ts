@@ -1,4 +1,4 @@
-export type getCategoryType = {
+export type CategoryGetDataType = {
   id: number;
   name: string;
 }[];

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import {
   Form,
   useActionData,
@@ -5,10 +6,14 @@ import {
   useNavigate,
   useSearchParams,
 } from '@remix-run/react';
-import { redirect } from 'react-router';
-import Modal from '../../components/modal/modal';
+import { toast } from 'react-toastify';
+
+import Modal from '~/components/modal/modal';
+
+import { tostActionType } from '~/shared/types/toast';
+import { BookGetDataType } from '~/shared/types/pages/book';
+
 import { deleteBook, getBookById } from '~/api/endpoints/book';
-import { useRef } from 'react';
 
 export const loader = async ({
   request,
@@ -32,24 +37,31 @@ export const action = async ({
 }) => {
   const id = params.id;
 
-  const response = await deleteBook(id, request);
+  try {
+    await deleteBook(id, request);
 
-  const searchParams = new URL(request.url).searchParams;
-
-  if (response.ok) {
-    return redirect(`/books?${searchParams}`);
+    return {
+      type: 'success',
+      toast: 'Book deleted successfully!',
+    };
+  } catch {
+    return {
+      type: 'error',
+      toast: 'Failed to delete book.',
+    };
   }
-
-  return 'Failed to Update book';
 };
 
 function DeleteBook() {
-  const loaderData = useLoaderData<{ data: { name: string } }>();
-  const actionData = useActionData<string>();
-  const isOpen = true;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const actionData = useActionData<tostActionType>();
+  const loaderData = useLoaderData<{ data: BookGetDataType }>();
   const deleteBookFormRef = useRef<HTMLFormElement>(null);
+
+  const handleClose = () => {
+    navigate(`/books?${searchParams}`);
+  };
 
   const handleSubmit = () => {
     if (deleteBookFormRef.current) {
@@ -57,13 +69,20 @@ function DeleteBook() {
     }
   };
 
-  const handleClose = () => {
-    navigate(`/books?${searchParams}`);
-  };
+  useEffect(() => {
+    if (actionData) {
+      if (actionData.type === 'success') {
+        toast.success(actionData.toast);
+        navigate(`/books?${searchParams}`);
+      } else {
+        toast.error(actionData.toast);
+      }
+    }
+  }, [actionData, navigate, searchParams]);
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen={true}
       onClose={handleClose}
       header="Delete book"
       onSubmit={handleSubmit}
@@ -75,11 +94,6 @@ function DeleteBook() {
         className="flex flex-col gap-4"
         ref={deleteBookFormRef}
       >
-        {actionData && (
-          <div className="bg-red-100 text-red-800 p-4 rounded">
-            {actionData}
-          </div>
-        )}
         <p>
           are you sure you want to delete this
           <span className="px-1 font-semibold">{loaderData.data.name}</span>

@@ -4,7 +4,7 @@ import { FaPencilAlt, FaTrash } from 'react-icons/fa';
 import { Button } from '~/components/ui/button';
 import { Card, CardHeader, CardTitle, CardFooter } from '~/components/ui/card';
 
-import { getCategoryType } from '~/shared/types/pages/category';
+import { CategoryGetDataType } from '~/shared/types/pages/category';
 
 import { getCategory } from '~/api/endpoints/category';
 
@@ -15,7 +15,7 @@ export const loader = async ({ request }: { request: Request }) => {
 };
 
 function Category() {
-  const { data }: { data?: getCategoryType } = useLoaderData();
+  const { data }: { data?: CategoryGetDataType } = useLoaderData();
 
   return (
     <section className="flex flex-col gap-8">
