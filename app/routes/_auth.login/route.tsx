@@ -2,18 +2,8 @@ import { Form, redirect, useActionData, useNavigation } from '@remix-run/react';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Button } from '~/components/ui/button';
-import { getToken, tokenCookie } from '~/lib/auth/cookies';
+import { tokenCookie } from '~/lib/auth/cookies';
 import { getAccessToken } from '~/api/endpoints/auth';
-
-export const loader = async ({ request }: { request: Request }) => {
-  const token = await getToken(request);
-
-  if (token) {
-    return redirect('/dashboard');
-  }
-
-  return null;
-};
 
 export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();

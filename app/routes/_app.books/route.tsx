@@ -38,7 +38,7 @@ export const loader = async ({ request }: { request: Request }) => {
   const page = searchParams.get('page') || '1';
   const data = await getBooks(page, request);
 
-  if (data.data.length === 0 && data.current_page > 1) {
+  if (data?.data?.length === 0 && data.current_page > 1) {
     return redirect('/books');
   }
 
@@ -77,7 +77,7 @@ const Books = () => {
       </div>
       <div className="overflow-auto">
         <Table>
-          {data.length === 0 ? (
+          {data?.length === 0 ? (
             <TableCaption>No Books found</TableCaption>
           ) : (
             <>
@@ -97,7 +97,7 @@ const Books = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((book, index) => (
+                {data?.map((book, index) => (
                   <TableRow key={book.id}>
                     <TableCell>
                       {(current_page - 1) * per_page + index + 1}
@@ -139,7 +139,7 @@ const Books = () => {
           )}
         </Table>
       </div>
-      {data.length > 0 && (
+      {data?.length > 0 && (
         <Pagination>
           <PaginationContent>
             <PaginationItem>

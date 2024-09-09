@@ -90,8 +90,6 @@ function UpdateBook() {
     useLoaderData();
   const updateBookFormRef = useRef<HTMLFormElement>(null);
 
-  console.log('book', book);
-
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
   };

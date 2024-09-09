@@ -7,6 +7,10 @@ export const getCategory = async (request: Request) => {
     headers,
   });
 
+  if (response.status === 401) {
+    return [];
+  }
+
   if (response.status !== 200) {
     const errorResponse = await response.json();
     throw errorResponse;
@@ -21,6 +25,10 @@ export const getCategoryById = async (id: string, request: Request) => {
   const response = await fetch(buildUrl(`/api/admin/categories/${id}`), {
     headers,
   });
+
+  if (response.status === 401) {
+    return [];
+  }
 
   if (response.status !== 200) {
     const errorResponse = await response.json();

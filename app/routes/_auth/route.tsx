@@ -1,5 +1,16 @@
-import { Outlet } from '@remix-run/react';
+import { Outlet, redirect } from '@remix-run/react';
 import AKlogo from '~/assets/AKlogo';
+import { getToken } from '~/lib/auth/cookies';
+
+export const loader = async ({ request }: { request: Request }) => {
+  const token = await getToken(request);
+
+  if (token) {
+    return redirect('/dashboard');
+  }
+
+  return null;
+};
 
 function Auth() {
   return (

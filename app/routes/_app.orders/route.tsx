@@ -1,6 +1,5 @@
-import { Form, useLoaderData } from '@remix-run/react';
+import { Form } from '@remix-run/react';
 import { useState } from 'react';
-import { getBookById } from '~/api/endpoints/book';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import {
@@ -29,23 +28,9 @@ export type Book = {
   stock: number;
 };
 
-export const loader = async ({
-  request,
-  params,
-}: {
-  request: Request;
-  params: { id: string };
-}) => {
-  const id = params.id;
-  const book = await getBookById(id, request);
-
-  return { book };
-};
-
 function Orders() {
-  const loaderData = useLoaderData<{ book: Book }>();
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Book[]>([]);
+  const [searchResults] = useState<Book[]>([]);
   const [cart, setCart] = useState<Book[]>([]);
 
   const handleAddToCart = (book: Book) => {
