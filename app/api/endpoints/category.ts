@@ -8,7 +8,7 @@ export const getCategory = async (request: Request) => {
   });
 
   if (response.status === 401) {
-    return [];
+    throw new Error('Unauthorized to access this resource');
   }
 
   if (response.status !== 200) {
@@ -25,10 +25,6 @@ export const getCategoryById = async (id: string, request: Request) => {
   const response = await fetch(buildUrl(`/api/admin/categories/${id}`), {
     headers,
   });
-
-  if (response.status === 401) {
-    return [];
-  }
 
   if (response.status !== 200) {
     const errorResponse = await response.json();

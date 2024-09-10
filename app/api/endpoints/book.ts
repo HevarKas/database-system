@@ -12,7 +12,7 @@ export const getBooks = async (page: string, request: Request) => {
   });
 
   if (response.status === 401) {
-    return [];
+    throw new Error('Unauthorized to access this resource');
   }
 
   if (response.status !== 200) {
@@ -29,10 +29,6 @@ export const getBookById = async (id: string, request: Request) => {
   const response = await fetch(buildUrl(`/api/admin/books/${id}`), {
     headers,
   });
-
-  if (response.status === 401) {
-    return [];
-  }
 
   if (response.status !== 200) {
     const errorResponse = await response.json();
