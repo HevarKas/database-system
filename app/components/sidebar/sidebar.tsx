@@ -44,8 +44,8 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="flex h-screen overflow-hidden">
-      <div className="flex flex-col items-center gap-4 bg-gray-200 dark:bg-gray-800 w-24 flex-shrink-0">
+    <aside className="flex h-screen overflow-hidden flex-shrink-0">
+      <div className="flex flex-col items-center gap-4 bg-gray-200 dark:bg-gray-800 w-24">
         <AKlogo isDarkMode={isDarkMode} height={100} width={100} />
         <nav className="py-4 flex flex-col items-center w-full">
           {navItems.map(({ to, icon, tooltipId, label }) => (
