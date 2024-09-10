@@ -14,8 +14,8 @@ export const loader = async ({ request }: { request: Request }) => {
 
 function Auth() {
   return (
-    <section className="flex flex-col items-center justify-center">
-      <div className="max-w-lg bg-gray-100 rounded-lg shadow-lg p-8 w-full flex flex-col items-center h-screen sm:mt-8 sm:h-auto dark:bg-gray-700">
+    <section className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="max-w-lg bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 w-full flex flex-col items-center">
         <AKlogo width={300} height={300} />
         <main className="p-4 w-full">
           <Outlet />

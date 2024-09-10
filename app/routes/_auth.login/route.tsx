@@ -20,47 +20,52 @@ export const action = async ({ request }: { request: Request }) => {
       },
     });
   } catch (error) {
-    throw new Error('failed to login');
+    return {
+      error: 'Invalid email or password. Please try again.',
+    };
   }
 };
 
 function Login() {
   const navigation = useNavigation();
-  const error = useActionData<string>();
+  const actionData = useActionData<{ error?: string }>();
 
   const isLoading = navigation.state === 'loading';
+  const error = actionData?.error;
 
   return (
-    <Form method="post" className="flex flex-col gap-4">
+    <Form method="post" className="flex flex-col gap-4 p-6 w-full">
       {error && (
-        <div className="bg-red-100 text-red-800 p-4 rounded">{error}</div>
+        <div className="bg-red-100 text-red-800 p-4 rounded dark:bg-red-900 dark:text-red-300">
+          {error}
+        </div>
       )}
-      <Label className="dark:text-black" htmlFor="email">
+      <Label className="dark:text-gray-300" htmlFor="email">
         Your email address
       </Label>
       <Input
-        className="dark:text-black dark:bg-white"
+        className="dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400"
         id="email"
         type="email"
         name="email"
         required
       />
-      <Label className="dark:text-black" htmlFor="password">
+      <Label className="dark:text-gray-300" htmlFor="password">
         Your password
       </Label>
       <Input
-        className="dark:text-black dark:bg-white"
+        className="dark:bg-gray-900 dark:text-gray-200 dark:placeholder-gray-400"
         id="password"
         type="password"
         name="password"
         required
       />
       <Button
-        className="dark:text-white dark:bg-black"
+        className="dark:bg-white dark:text-gray-900"
         type="submit"
         disabled={isLoading}
       >
-        {isLoading ? 'logging in...' : 'Log in'}
+        {isLoading ? 'Logging in...' : 'Log in'}
       </Button>
     </Form>
   );
