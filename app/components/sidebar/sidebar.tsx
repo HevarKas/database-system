@@ -56,9 +56,9 @@ const Sidebar = () => {
               onMouseLeave={handleMouseLeave}
               className={({ isActive }) =>
                 classNames(
-                  'flex justify-center items-center h-12 w-full text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 relative group py-8',
+                  'flex justify-center items-center h-12 w-full text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 relative group py-8 border-l-4',
                   {
-                    'border-l-4': isActive,
+                    'border-transparent': !isActive,
                     'border-black': isActive && !isDarkMode,
                     'border-white': isActive && isDarkMode,
                     'bg-gray-300 dark:bg-gray-700': isActive,
