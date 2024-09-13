@@ -9,6 +9,7 @@ export type BookActionDataType = {
   stock: number;
   category_id: number;
   barcode: string;
+  cover_image: File;
 };
 
 export type BookGetDataType = {
@@ -23,6 +24,7 @@ export type BookGetDataType = {
   stock: number;
   category: string;
   barcode: string;
+  cover: string;
 };
 
 export type BooksDataType = {

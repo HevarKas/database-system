@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Form,
   useActionData,
@@ -33,21 +33,22 @@ export const loader = async ({ request }: { request: Request }) => {
 export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();
 
-  const book = {
-    name: formData.get('name') as string,
-    description: 'soon will be deleted',
-    author: formData.get('author') as string,
-    translator: formData.get('translator') as string,
-    publish_year: Number(formData.get('publish_year')),
-    cost: Number(formData.get('cost')),
-    price: Number(formData.get('price')),
-    stock: Number(formData.get('stock')),
-    category_id: Number(formData.get('category_id')),
-    barcode: formData.get('barcode') as string,
-  };
+  const formDataToSend = new FormData();
+
+  formDataToSend.append('name', formData.get('name') as string);
+  formDataToSend.append('description', 'soon will be deleted');
+  formDataToSend.append('author', formData.get('author') as string);
+  formDataToSend.append('translator', formData.get('translator') as string);
+  formDataToSend.append('publish_year', formData.get('publish_year') as string);
+  formDataToSend.append('cost', formData.get('cost') as string);
+  formDataToSend.append('price', formData.get('price') as string);
+  formDataToSend.append('stock', formData.get('stock') as string);
+  formDataToSend.append('category_id', formData.get('category_id') as string);
+  formDataToSend.append('barcode', formData.get('barcode') as string);
+  formDataToSend.append('cover_image', formData.get('cover_image') as File);
 
   try {
-    await createBook(request, book);
+    await createBook(request, formDataToSend);
 
     return {
       type: 'success',
@@ -65,8 +66,9 @@ function CreateCategory() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const actionData = useActionData<tostActionType>();
-  const { data }: { data?: CategoryGetDataType } = useLoaderData();
   const createBookFormRef = useRef<HTMLFormElement>(null);
+  const { data }: { data?: CategoryGetDataType } = useLoaderData();
+  const [imagePreview, setImagePreview] = useState<string | undefined>();
 
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
@@ -77,6 +79,17 @@ function CreateCategory() {
   ) => {
     if (event.key === 'Enter') {
       event.preventDefault();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -105,7 +118,12 @@ function CreateCategory() {
       onSubmit={onSubmit}
       submitLabel="Create"
     >
-      <Form method="post" className="space-y-6 p-2" ref={createBookFormRef}>
+      <Form
+        method="post"
+        className="space-y-6 p-2"
+        ref={createBookFormRef}
+        encType="multipart/form-data"
+      >
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
             <Label
@@ -260,6 +278,26 @@ function CreateCategory() {
               onKeyDown={handleBarcodeKeyDown}
               className="p-3 border rounded-md"
             />
+          </div>
+          <div className="flex flex-col gap-4 md:col-span-2">
+            <div className="flex flex-col gap-4">
+              <Label
+                htmlFor="cover_image"
+                className="text-lg font-semibold dark:text-white"
+              >
+                Cover Image
+              </Label>
+              <input
+                type="file"
+                id="cover_image"
+                name="cover_image"
+                accept="image/jpeg, image/png"
+                onChange={handleFileChange}
+              />
+            </div>
+            <div className="flex justify-center items-center">
+              <img src={imagePreview} alt="Book Cover" className="w-24 h-24" />
+            </div>
           </div>
         </div>
       </Form>

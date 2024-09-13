@@ -1,5 +1,4 @@
 import { buildUrl, getEnrichedHeaders } from '~/api/config';
-import { BookActionDataType } from '~/shared/types/pages/book';
 
 export const getBooks = async (page: string, request: Request) => {
   const headers = await getEnrichedHeaders(request);
@@ -38,18 +37,13 @@ export const getBookById = async (id: string, request: Request) => {
   return response.json();
 };
 
-export const createBook = async (
-  request: Request,
-  book: BookActionDataType,
-) => {
-  const headers = await getEnrichedHeaders(request, {
-    contentType: 'application/json',
-  });
+export const createBook = async (request: Request, bookFormData: FormData) => {
+  const headers = await getEnrichedHeaders(request);
 
   const response = await fetch(buildUrl(`/api/admin/books`), {
     method: 'POST',
     headers,
-    body: JSON.stringify(book),
+    body: bookFormData,
   });
 
   if (response.status !== 200) {
@@ -62,18 +56,15 @@ export const createBook = async (
 
 export const updateBook = async (
   request: Request,
-  book: BookActionDataType,
+  bookFormData: FormData,
   id: string,
 ) => {
-  const headers = await getEnrichedHeaders(request, {
-    contentType: 'application/json',
-  });
+  const headers = await getEnrichedHeaders(request);
 
-  const _method = 'PATCH';
   const response = await fetch(buildUrl(`/api/admin/books/${id}`), {
     method: 'POST',
     headers,
-    body: JSON.stringify({ ...book, _method }),
+    body: bookFormData,
   });
 
   if (response.status !== 200) {

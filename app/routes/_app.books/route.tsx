@@ -87,6 +87,7 @@ const Books = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
+                  <TableHead>Cover</TableHead>
                   <TableHead>Barcode</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Author</TableHead>
@@ -104,6 +105,13 @@ const Books = () => {
                   <TableRow key={book.id}>
                     <TableCell>
                       {(current_page - 1) * per_page + index + 1}
+                    </TableCell>
+                    <TableCell>
+                      <img
+                        src={book.cover}
+                        alt={book.name}
+                        className="w-12 h-12 object-cover rounded-md"
+                      />
                     </TableCell>
                     <TableCell>{book.barcode}</TableCell>
                     <TableCell>{book.name}</TableCell>

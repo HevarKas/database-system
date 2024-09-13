@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Form,
   useActionData,
@@ -48,24 +48,25 @@ export const action = async ({
   params: { id: string };
 }) => {
   const formData = await request.formData();
-
   const id = params.id;
 
-  const book = {
-    name: formData.get('name') as string,
-    description: 'Soon will be deleted',
-    author: formData.get('author') as string,
-    translator: formData.get('translator') as string,
-    publish_year: Number(formData.get('publish_year')),
-    cost: Number(formData.get('cost')),
-    price: Number(formData.get('price')),
-    stock: Number(formData.get('stock')),
-    category_id: Number(formData.get('category_id')),
-    barcode: formData.get('barcode') as string,
-  };
+  const formDataToSend = new FormData();
+
+  formDataToSend.append('name', formData.get('name') as string);
+  formDataToSend.append('description', 'soon will be deleted');
+  formDataToSend.append('author', formData.get('author') as string);
+  formDataToSend.append('translator', formData.get('translator') as string);
+  formDataToSend.append('publish_year', formData.get('publish_year') as string);
+  formDataToSend.append('cost', formData.get('cost') as string);
+  formDataToSend.append('price', formData.get('price') as string);
+  formDataToSend.append('stock', formData.get('stock') as string);
+  formDataToSend.append('category_id', formData.get('category_id') as string);
+  formDataToSend.append('barcode', formData.get('barcode') as string);
+  formDataToSend.append('cover_image', formData.get('cover_image') as File);
+  formDataToSend.append('_method', 'PATCH');
 
   try {
-    await updateBook(request, book, id);
+    await updateBook(request, formDataToSend, id);
 
     return {
       type: 'success',
@@ -89,9 +90,23 @@ function UpdateBook() {
   }: { book?: BookGetDataType; category?: CategoryGetDataType } =
     useLoaderData();
   const updateBookFormRef = useRef<HTMLFormElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | undefined>(
+    book?.cover,
+  );
 
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = () => {
@@ -128,7 +143,12 @@ function UpdateBook() {
       submitLabel="Update"
       variant="warning"
     >
-      <Form method="post" className="space-y-6 p-2" ref={updateBookFormRef}>
+      <Form
+        method="post"
+        className="space-y-6 p-2"
+        ref={updateBookFormRef}
+        encType="multipart/form-data"
+      >
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div>
             <Label
@@ -293,6 +313,26 @@ function UpdateBook() {
               onKeyDown={handleBarcodeKeyDown}
               className="p-3 border rounded-md"
             />
+          </div>
+          <div className="flex flex-col gap-4 md:col-span-2">
+            <div className="flex flex-col gap-4">
+              <Label
+                htmlFor="cover_image"
+                className="text-lg font-semibold dark:text-white"
+              >
+                Cover Image
+              </Label>
+              <input
+                type="file"
+                id="cover_image"
+                name="cover_image"
+                accept="image/jpeg, image/png"
+                onChange={handleFileChange}
+              />
+            </div>
+            <div className="flex justify-center items-center">
+              <img src={imagePreview} alt={book?.name} className="w-24 h-24" />
+            </div>
           </div>
         </div>
       </Form>
