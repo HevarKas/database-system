@@ -1,3 +1,6 @@
+import React from 'react';
+import { ThemeProvider } from '~/contexts/themeProvider';
+import { LanguageProvider } from '~/contexts/LanguageContext';
 import {
   Links,
   Meta,
@@ -6,7 +9,6 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import '~/tailwind.css';
-import { ThemeProvider } from '~/contexts/themeProvider';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -31,8 +33,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <ThemeProvider>
-      <ToastContainer />
-      <Outlet />
+      <LanguageProvider>
+        <ToastContainer />
+        <Outlet />
+      </LanguageProvider>
     </ThemeProvider>
   );
 }

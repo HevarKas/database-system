@@ -7,6 +7,7 @@ import {
   useSearchParams,
 } from '@remix-run/react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import { Label } from '~/components/ui/label';
 import { Input } from '~/components/ui/input';
@@ -69,6 +70,7 @@ function CreateCategory() {
   const createBookFormRef = useRef<HTMLFormElement>(null);
   const { data }: { data?: CategoryGetDataType } = useLoaderData();
   const [imagePreview, setImagePreview] = useState<string | undefined>();
+  const { t } = useTranslation();
 
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
@@ -114,9 +116,9 @@ function CreateCategory() {
     <Modal
       isOpen={true}
       onClose={handleClose}
-      header="Create Category"
+      header={t('books.createBook')}
       onSubmit={onSubmit}
-      submitLabel="Create"
+      submitLabel={t('books.create')}
     >
       <Form
         method="post"
@@ -125,12 +127,12 @@ function CreateCategory() {
         encType="multipart/form-data"
       >
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="name"
               className="text-lg font-semibold dark:text-white"
             >
-              Name
+              {t('books.bookDetails.name')}
             </Label>
             <Input
               type="text"
@@ -141,12 +143,12 @@ function CreateCategory() {
               className="p-3 border rounded-md"
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="author"
               className="text-lg font-semibold dark:text-white"
             >
-              Author
+              {t('books.bookDetails.author')}
             </Label>
             <Input
               type="text"
@@ -160,12 +162,12 @@ function CreateCategory() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="translator"
               className="text-lg font-semibold dark:text-white"
             >
-              Translator
+              {t('books.bookDetails.translator')}
             </Label>
             <Input
               type="text"
@@ -176,12 +178,12 @@ function CreateCategory() {
               className="p-3 border rounded-md"
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="publish_year"
               className="text-lg font-semibold dark:text-white"
             >
-              Publish Year
+              {t('books.bookDetails.publishYear')}
             </Label>
             <Input
               type="number"
@@ -194,12 +196,12 @@ function CreateCategory() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="cost"
               className="text-lg font-semibold dark:text-white"
             >
-              Cost
+              {t('books.bookDetails.cost')}
             </Label>
             <Input
               type="number"
@@ -209,12 +211,12 @@ function CreateCategory() {
               className="p-3 border rounded-md"
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="price"
               className="text-lg font-semibold dark:text-white"
             >
-              Price
+              {t('books.bookDetails.price')}
             </Label>
             <Input
               type="number"
@@ -224,12 +226,12 @@ function CreateCategory() {
               className="p-3 border rounded-md"
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="stock"
               className="text-lg font-semibold dark:text-white"
             >
-              Stock
+              {t('books.bookDetails.stock')}
             </Label>
             <Input
               type="number"
@@ -242,16 +244,18 @@ function CreateCategory() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="category_id"
               className="text-lg font-semibold dark:text-white"
             >
-              Category
+              {t('books.bookDetails.category')}
             </Label>
             <Select name="category_id" required>
               <SelectTrigger>
-                <SelectValue placeholder="Select Category" />
+                <SelectValue
+                  placeholder={t('books.bookDetails.selectCategory')}
+                />
               </SelectTrigger>
               <SelectContent>
                 {data?.map((item) => (
@@ -262,12 +266,12 @@ function CreateCategory() {
               </SelectContent>
             </Select>
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="barcode"
               className="text-lg font-semibold dark:text-white"
             >
-              Barcode
+              {t('books.bookDetails.barcode')}
             </Label>
             <Input
               type="text"
@@ -285,7 +289,7 @@ function CreateCategory() {
                 htmlFor="cover_image"
                 className="text-lg font-semibold dark:text-white"
               >
-                Cover Image
+                {t('books.bookDetails.coverImage')}
               </Label>
               <input
                 type="file"

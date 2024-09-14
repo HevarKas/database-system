@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Form, useActionData, useNavigate } from '@remix-run/react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import { Label } from '~/components/ui/label';
 import { Input } from '~/components/ui/input';
@@ -30,6 +31,7 @@ export const action = async ({ request }: { request: Request }) => {
 
 function CreateCategory() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const actionData = useActionData<tostActionType>();
   const createCategoryFormRef = useRef<HTMLFormElement>(null);
 
@@ -56,17 +58,16 @@ function CreateCategory() {
     <Modal
       isOpen={true}
       onClose={handleClose}
-      header="Create Category"
+      header={t('category.createCategory')}
       onSubmit={handleSubmit}
-      submitLabel="Create"
-      variant="success"
+      submitLabel={t('category.createCategory')}
     >
       <Form
         method="post"
         className="flex flex-col gap-4 mx-2"
         ref={createCategoryFormRef}
       >
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name">{t('category.categoryDetails.name')}</Label>
         <Input type="text" name="name" id="name" maxLength={50} required />
       </Form>
     </Modal>

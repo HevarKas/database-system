@@ -5,6 +5,7 @@ import {
   useLoaderData,
   useRouteError,
 } from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
 import { FaPencilAlt, FaTrash } from 'react-icons/fa';
 import ErrorIcon from '~/assets/ErrorIcon';
 
@@ -23,15 +24,16 @@ export const loader = async ({ request }: { request: Request }) => {
 
 function Category() {
   const { data }: { data?: CategoryGetDataType } = useLoaderData();
+  const { t } = useTranslation();
 
   return (
     <section className="flex flex-col gap-8">
       <Outlet />
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Categories</h1>
+        <h1 className="text-2xl font-semibold">{t('category.categories')}</h1>
         <Link to="create-category">
-          <Button>Create Category</Button>
+          <Button>{t('category.createCategory')}</Button>
         </Link>
       </div>
 
@@ -63,7 +65,9 @@ function Category() {
       )}
 
       {data && data.length === 0 && (
-        <div className="text-center text-lg">No categories found</div>
+        <div className="text-center text-lg">
+          {t('Category.noCategoriesFound')}
+        </div>
       )}
     </section>
   );

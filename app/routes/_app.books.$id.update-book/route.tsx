@@ -7,6 +7,7 @@ import {
   useSearchParams,
 } from '@remix-run/react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import { Label } from '~/components/ui/label';
 import { Input } from '~/components/ui/input';
@@ -89,6 +90,7 @@ function UpdateBook() {
     category,
   }: { book?: BookGetDataType; category?: CategoryGetDataType } =
     useLoaderData();
+  const { t } = useTranslation();
   const updateBookFormRef = useRef<HTMLFormElement>(null);
   const [imagePreview, setImagePreview] = useState<string | undefined>(
     book?.cover,
@@ -138,9 +140,9 @@ function UpdateBook() {
     <Modal
       isOpen={true}
       onClose={handleClose}
-      header="Update Book"
+      header={t('books.updateBook')}
       onSubmit={handleSubmit}
-      submitLabel="Update"
+      submitLabel={t('books.update')}
       variant="warning"
     >
       <Form
@@ -150,12 +152,12 @@ function UpdateBook() {
         encType="multipart/form-data"
       >
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="name"
               className="text-lg font-semibold dark:text-white"
             >
-              Name
+              {t('books.bookDetails.name')}
             </Label>
             <Input
               type="text"
@@ -167,12 +169,12 @@ function UpdateBook() {
               className="p-3 border rounded-md"
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="author"
               className="text-lg font-semibold dark:text-white"
             >
-              Author
+              {t('books.bookDetails.author')}
             </Label>
             <Input
               type="text"
@@ -187,12 +189,12 @@ function UpdateBook() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="translator"
               className="text-lg font-semibold dark:text-white"
             >
-              Translator
+              {t('books.bookDetails.translator')}
             </Label>
             <Input
               type="text"
@@ -204,12 +206,12 @@ function UpdateBook() {
               className="p-3 border rounded-md"
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="publish_year"
               className="text-lg font-semibold dark:text-white"
             >
-              Publish Year
+              {t('books.bookDetails.publishYear')}
             </Label>
             <Input
               type="number"
@@ -223,12 +225,12 @@ function UpdateBook() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="cost"
               className="text-lg font-semibold dark:text-white"
             >
-              Cost
+              {t('books.bookDetails.cost')}
             </Label>
             <Input
               type="number"
@@ -239,12 +241,12 @@ function UpdateBook() {
               className="p-3 border rounded-md"
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="price"
               className="text-lg font-semibold dark:text-white"
             >
-              Price
+              {t('books.bookDetails.price')}
             </Label>
             <Input
               type="number"
@@ -255,12 +257,12 @@ function UpdateBook() {
               className="p-3 border rounded-md"
             />
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="stock"
               className="text-lg font-semibold dark:text-white"
             >
-              Stock
+              {t('books.bookDetails.stock')}
             </Label>
             <Input
               type="number"
@@ -274,17 +276,19 @@ function UpdateBook() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="category_id"
               className="text-lg font-semibold dark:text-white"
             >
-              Category
+              {t('books.bookDetails.category')}
             </Label>
             <Select name="category_id" required>
               <SelectTrigger>
                 <SelectValue
-                  placeholder={book?.category || 'Select Category'}
+                  placeholder={
+                    book?.category || t('books.bookDetails.selectCategory')
+                  }
                 />
               </SelectTrigger>
               <SelectContent>
@@ -296,12 +300,12 @@ function UpdateBook() {
               </SelectContent>
             </Select>
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label
               htmlFor="barcode"
               className="text-lg font-semibold dark:text-white"
             >
-              Barcode
+              {t('books.bookDetails.barcode')}
             </Label>
             <Input
               type="text"
@@ -314,13 +318,13 @@ function UpdateBook() {
               className="p-3 border rounded-md"
             />
           </div>
-          <div className="flex flex-col gap-4 md:col-span-2">
+          <div className="flex flex-col gap-2 md:col-span-2">
             <div className="flex flex-col gap-4">
               <Label
                 htmlFor="cover_image"
                 className="text-lg font-semibold dark:text-white"
               >
-                Cover Image
+                {t('books.bookDetails.coverImage')}
               </Label>
               <input
                 type="file"

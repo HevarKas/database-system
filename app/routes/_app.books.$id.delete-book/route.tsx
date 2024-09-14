@@ -7,8 +7,10 @@ import {
   useSearchParams,
 } from '@remix-run/react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import Modal from '~/components/modal/modal';
+import { useLanguage } from '~/contexts/LanguageContext';
 
 import { tostActionType } from '~/shared/types/toast';
 import { BookGetDataType } from '~/shared/types/pages/book';
@@ -58,6 +60,8 @@ function DeleteBook() {
   const actionData = useActionData<tostActionType>();
   const loaderData = useLoaderData<{ data: BookGetDataType }>();
   const deleteBookFormRef = useRef<HTMLFormElement>(null);
+  const { t } = useTranslation();
+  const { rtl } = useLanguage();
 
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
@@ -84,9 +88,9 @@ function DeleteBook() {
     <Modal
       isOpen={true}
       onClose={handleClose}
-      header="Delete book"
+      header={t('books.deleteBook')}
       onSubmit={handleSubmit}
-      submitLabel="Delete"
+      submitLabel={t('books.delete')}
       variant="danger"
     >
       <Form
@@ -95,9 +99,9 @@ function DeleteBook() {
         ref={deleteBookFormRef}
       >
         <p>
-          are you sure you want to delete this
+          {t('books.deleteBookMessage')}
           <span className="px-1 font-semibold">{loaderData.data.name}</span>
-          book?
+          {rtl ? '؟' : '?'}
         </p>
       </Form>
     </Modal>

@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import classNames from 'classnames';
 import { FaTimes } from 'react-icons/fa';
 import { Button } from '~/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 interface ModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ const Modal = ({
   onSubmit,
   variant = 'default',
 }: ModalProps) => {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   const overlayClasses = 'fixed inset-0 bg-black bg-opacity-50';
@@ -75,7 +77,7 @@ const Modal = ({
               onClick={onClose}
               className={`${buttonBaseClasses} bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600`}
             >
-              Cancel
+              {t('books.cancel')}
             </Button>
             <Button
               type="button"

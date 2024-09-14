@@ -6,6 +6,7 @@ import {
   useNavigate,
 } from '@remix-run/react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import { Label } from '~/components/ui/label';
 import { Input } from '~/components/ui/input';
@@ -59,6 +60,7 @@ export const action = async ({
 
 function UpdateCategory() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const actionData = useActionData<tostActionType>();
   const loaderData = useLoaderData<LoaderDataType>();
   const updateCategoryFormRef = useRef<HTMLFormElement>(null);
@@ -88,17 +90,16 @@ function UpdateCategory() {
     <Modal
       isOpen={true}
       onClose={handleClose}
-      header="Update Category"
+      header={t('category.updateCategory')}
       onSubmit={handleSubmit}
-      submitLabel="Update"
-      variant="warning"
+      submitLabel={t('category.update')}
     >
       <Form
         method="post"
         className="flex flex-col gap-4 mx-2"
         ref={updateCategoryFormRef}
       >
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name">{t('category.categoryDetails.name')}</Label>
         <Input
           className="dark:text-black dark:bg-white"
           type="text"

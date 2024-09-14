@@ -4,6 +4,8 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { cn } from 'app/lib/utils';
 import { ButtonProps, buttonVariants } from 'app/components/ui/button';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '~/contexts/LanguageContext';
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
   <nav
@@ -75,18 +77,26 @@ PaginationLink.displayName = 'PaginationLink';
 const PaginationPrevious = ({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to previous page"
-    size="default"
-    className={cn('gap-1 pl-2.5', className)}
-    {...props}
-  >
-    <ChevronLeft className="h-4 w-4" />
-    <span>Previous</span>
-  </PaginationLink>
-);
-PaginationPrevious.displayName = 'PaginationPrevious';
+}: React.ComponentProps<typeof PaginationLink>) => {
+  const { t } = useTranslation();
+  const { rtl } = useLanguage();
+
+  return (
+    <PaginationLink
+      aria-label={t('books.pervious')}
+      size="default"
+      className={cn('gap-1 pl-2.5 flex items-center', className)}
+      {...props}
+    >
+      {rtl ? (
+        <ChevronRight className="h-4 w-4" />
+      ) : (
+        <ChevronLeft className="h-4 w-4" />
+      )}
+      <span>{t('books.pervious')}</span>
+    </PaginationLink>
+  );
+};
 PaginationPrevious.propTypes = {
   className: PropTypes.string,
 };
@@ -94,18 +104,26 @@ PaginationPrevious.propTypes = {
 const PaginationNext = ({
   className,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to next page"
-    size="default"
-    className={cn('gap-1 pr-2.5', className)}
-    {...props}
-  >
-    <span>Next</span>
-    <ChevronRight className="h-4 w-4" />
-  </PaginationLink>
-);
-PaginationNext.displayName = 'PaginationNext';
+}: React.ComponentProps<typeof PaginationLink>) => {
+  const { t } = useTranslation();
+  const { rtl } = useLanguage();
+
+  return (
+    <PaginationLink
+      aria-label={t('books.next')}
+      size="default"
+      className={cn('gap-1 pr-2.5 flex items-center', className)}
+      {...props}
+    >
+      <span>{t('books.next')}</span>
+      {rtl ? (
+        <ChevronLeft className="h-4 w-4" />
+      ) : (
+        <ChevronRight className="h-4 w-4" />
+      )}
+    </PaginationLink>
+  );
+};
 PaginationNext.propTypes = {
   className: PropTypes.string,
 };

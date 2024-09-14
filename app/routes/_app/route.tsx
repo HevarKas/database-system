@@ -12,6 +12,8 @@ import Sidebar from '~/components/sidebar/sidebar';
 import LogoutComponent from '~/components/header/logoutModal';
 
 import { getToken } from '~/lib/auth/cookies';
+import { useLanguage } from '~/contexts/LanguageContext';
+import classNames from 'classnames';
 
 export const loader = async ({ request }: { request: Request }) => {
   const token = await getToken(request);
@@ -25,6 +27,7 @@ export const loader = async ({ request }: { request: Request }) => {
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
+  const { rtl } = useLanguage();
 
   const handleCloseModal = () => {
     setIsOpen(false);
@@ -35,7 +38,7 @@ function App() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className={classNames('flex h-screen', { rtl: rtl })}>
       <Sidebar />
       <div className="flex flex-col w-full">
         <Header onOpenModal={handleOpenModal} />

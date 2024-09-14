@@ -6,8 +6,10 @@ import {
   useNavigate,
 } from '@remix-run/react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 import Modal from '~/components/modal/modal';
+import { useLanguage } from '~/contexts/LanguageContext';
 
 import { tostActionType } from '~/shared/types/toast';
 import { LoaderDataType } from '~/shared/types/pages/category';
@@ -52,6 +54,8 @@ export const action = async ({
 };
 
 function DeleteCategory() {
+  const { rtl } = useLanguage();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const actionData = useActionData<tostActionType>();
   const loaderData = useLoaderData<LoaderDataType>();
@@ -82,21 +86,19 @@ function DeleteCategory() {
     <Modal
       isOpen={true}
       onClose={handleClose}
-      header="Delete Category"
+      header={t('category.deleteCategory')}
       onSubmit={handleSubmit}
-      submitLabel="Delete"
-      variant="danger"
+      submitLabel={t('category.delete')}
     >
       <Form
         method="post"
         className="flex flex-col gap-4"
         ref={deleteCategoryFormRef}
       >
-        <p>
-          are you sure you want to delete this
-          <span className="px-1 font-semibold">{loaderData.data.name}</span>
-          category?
-        </p>
+        <span>
+          {t('category.deleteCategoryMessage')} <b>{loaderData.data?.name}</b>
+          {rtl ? '؟' : '?'}
+        </span>
       </Form>
     </Modal>
   );

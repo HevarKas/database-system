@@ -9,6 +9,7 @@ import {
   useSearchParams,
 } from '@remix-run/react';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import { FaPencilAlt, FaTrash } from 'react-icons/fa';
 import ErrorIcon from '~/assets/ErrorIcon';
 
@@ -52,6 +53,7 @@ const Books = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data, current_page, last_page, per_page }: BooksDataType =
     useLoaderData();
+  const { t } = useTranslation();
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -73,35 +75,35 @@ const Books = () => {
     <section className="flex flex-col gap-4 max-h-[calc(100vh-180px)]">
       <Outlet />
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Books</h1>
+        <h1 className="text-2xl font-semibold">{t('books.books')}</h1>
         <Link to={`create-book?${searchParams}`} className="flex items-center">
-          <Button>Create Book</Button>
+          <Button>{t('books.createBook')}</Button>
         </Link>
       </div>
       <div className="overflow-auto">
         <Table>
           {data?.length === 0 ? (
-            <TableCaption>No Books found</TableCaption>
+            <TableCaption>{t('books.noBooksFound')}</TableCaption>
           ) : (
             <>
               <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Barcode</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Author</TableHead>
-                  <TableHead>Translator</TableHead>
-                  <TableHead>Publish Year</TableHead>
-                  <TableHead>Cost</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Actions</TableHead>
+                <TableRow className="text-center">
+                  <TableHead>{t('books.bookDetails.ID')}</TableHead>
+                  <TableHead>{t('books.bookDetails.barcode')}</TableHead>
+                  <TableHead>{t('books.bookDetails.name')}</TableHead>
+                  <TableHead>{t('books.bookDetails.author')}</TableHead>
+                  <TableHead>{t('books.bookDetails.translator')}</TableHead>
+                  <TableHead>{t('books.bookDetails.publishYear')}</TableHead>
+                  <TableHead>{t('books.bookDetails.cost')}</TableHead>
+                  <TableHead>{t('books.bookDetails.price')}</TableHead>
+                  <TableHead>{t('books.bookDetails.stock')}</TableHead>
+                  <TableHead>{t('books.bookDetails.category')}</TableHead>
+                  <TableHead>{t('books.bookDetails.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data?.map((book, index) => (
-                  <TableRow key={book.id}>
+                  <TableRow key={book.id} className="text-center">
                     <TableCell>
                       {(current_page - 1) * per_page + index + 1}
                     </TableCell>
@@ -112,11 +114,11 @@ const Books = () => {
                     <TableCell>{book.publish_year}</TableCell>
                     <TableCell className="text-red-500">
                       {formatNumberWithThousandSeparator(book.cost)}
-                      <span className="ml-1">{CURRENCY_UNIT}</span>
+                      <span className="mx-1">{CURRENCY_UNIT}</span>
                     </TableCell>
                     <TableCell className="text-green-500">
                       {formatNumberWithThousandSeparator(book.price)}
-                      <span className="ml-1">{CURRENCY_UNIT}</span>
+                      <span className="mx-1">{CURRENCY_UNIT}</span>
                     </TableCell>
                     <TableCell>{book.stock}</TableCell>
                     <TableCell>{book.category}</TableCell>
@@ -145,7 +147,7 @@ const Books = () => {
       {data?.length > 0 && (
         <Pagination>
           <PaginationContent>
-            <PaginationItem>
+            <PaginationItem value="dddd">
               <PaginationPrevious
                 onClick={() =>
                   !isPreviousDisabled && handlePageChange(current_page - 1)
@@ -156,8 +158,10 @@ const Books = () => {
               />
             </PaginationItem>
             <PaginationItem>
-              <span className="font-semibold">Page {current_page}</span>
-              <span className="mx-2">of</span>
+              <span className="font-semibold">
+                {t('books.page')} {current_page}
+              </span>
+              <span className="mx-2">{t('books.of')}</span>
               <span className="font-bold">{last_page}</span>
             </PaginationItem>
             <PaginationItem>

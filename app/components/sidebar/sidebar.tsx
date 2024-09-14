@@ -10,36 +10,45 @@ import { MdCategory, MdOutlinePointOfSale } from 'react-icons/md';
 
 import useTooltip from '~/contexts/useTooltip';
 import { useTheme } from '~/contexts/themeProvider';
+import { useLanguage } from '~/contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 const Sidebar = () => {
   const { isDarkMode } = useTheme();
   const { tooltip, showTooltip, handleMouseEnter, handleMouseLeave } =
     useTooltip();
+  const { rtl } = useLanguage();
+  const { t } = useTranslation();
+
+  const dashboardLabel = t('navbar.dashboard');
+  const bookLabel = t('navbar.book');
+  const orderLabel = t('navbar.order');
+  const categoryLabel = t('navbar.category');
 
   const navItems = [
     {
       to: '/dashboard',
       icon: <HiDocumentReport size={32} />,
       tooltipId: 'dashboard-tooltip',
-      label: 'Dashboard',
+      label: dashboardLabel,
     },
     {
       to: '/category',
       icon: <MdCategory size={32} />,
       tooltipId: 'category-tooltip',
-      label: 'Category',
+      label: categoryLabel,
     },
     {
       to: '/books',
       icon: <PiBooksFill size={32} />,
       tooltipId: 'book-tooltip',
-      label: 'Book',
+      label: bookLabel,
     },
     {
       to: '/orders',
       icon: <MdOutlinePointOfSale size={32} />,
       tooltipId: 'order-tooltip',
-      label: 'Order',
+      label: orderLabel,
     },
   ];
 
@@ -56,8 +65,10 @@ const Sidebar = () => {
               onMouseLeave={handleMouseLeave}
               className={({ isActive }) =>
                 classNames(
-                  'flex justify-center items-center h-12 w-full text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 relative group py-8 border-l-4',
+                  'flex justify-center items-center h-12 w-full text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 relative group py-8',
                   {
+                    'border-l-4': !rtl,
+                    'border-r-4': rtl,
                     'border-transparent': !isActive,
                     'border-black': isActive && !isDarkMode,
                     'border-white': isActive && isDarkMode,
