@@ -89,6 +89,7 @@ function DeleteCategory() {
       header={t('category.deleteCategory')}
       onSubmit={handleSubmit}
       submitLabel={t('category.delete')}
+      variant="danger"
     >
       <Form
         method="post"

@@ -312,7 +312,7 @@ function UpdateBook() {
               name="barcode"
               defaultValue={book?.barcode}
               id="barcode"
-              maxLength={50}
+              maxLength={16}
               required
               onKeyDown={handleBarcodeKeyDown}
               className="p-3 border rounded-md"

@@ -1,5 +1,6 @@
 export const arabicTranslations = {
   ahmedKoye: 'احمد كوي',
+  loading: 'جار التحميل',
   navbar: {
     dashboard: 'لوحة القيادة',
     book: 'كتاب',

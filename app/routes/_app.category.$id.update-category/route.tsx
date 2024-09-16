@@ -93,6 +93,7 @@ function UpdateCategory() {
       header={t('category.updateCategory')}
       onSubmit={handleSubmit}
       submitLabel={t('category.update')}
+      variant="warning"
     >
       <Form
         method="post"

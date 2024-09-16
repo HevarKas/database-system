@@ -277,7 +277,7 @@ function CreateCategory() {
               type="text"
               name="barcode"
               id="barcode"
-              maxLength={50}
+              maxLength={20}
               required
               onKeyDown={handleBarcodeKeyDown}
               className="p-3 border rounded-md"

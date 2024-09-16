@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { FaTimes } from 'react-icons/fa';
 import { Button } from '~/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@remix-run/react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -24,6 +25,9 @@ const Modal = ({
   variant = 'default',
 }: ModalProps) => {
   const { t } = useTranslation();
+  const navigation = useNavigation();
+
+  const isLoading = navigation.state === 'loading';
   if (!isOpen) return null;
 
   const overlayClasses = 'fixed inset-0 bg-black bg-opacity-50';
@@ -83,8 +87,9 @@ const Modal = ({
               type="button"
               onClick={onSubmit}
               className={submitButtonClasses}
+              disabled={isLoading}
             >
-              {submitLabel}
+              {isLoading ? t('loading') : submitLabel}
             </Button>
           </footer>
         )}

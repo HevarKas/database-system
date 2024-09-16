@@ -1,5 +1,6 @@
 export const kurdishTranslations = {
   ahmedKoye: 'ئەحمەد کۆیی',
+  loading: 'بارکردن',
   navbar: {
     dashboard: 'داشبۆرد',
     book: 'کتێب',

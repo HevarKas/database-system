@@ -1,5 +1,6 @@
 export const englishTranslations = {
   ahmedKoye: 'Ahmed Koye',
+  loading: 'Loading',
   navbar: {
     dashboard: 'Dashboard',
     book: 'Book',
