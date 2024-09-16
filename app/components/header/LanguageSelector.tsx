@@ -22,7 +22,7 @@ const LanguageSwitcher: React.FC = () => {
   return (
     <section className="flex items-center mx-2 w-24">
       <Select value={language} onValueChange={handleLanguageChange}>
-        <SelectTrigger>
+        <SelectTrigger className="bg-transparent border-none focus:outline-none">
           <SelectValue placeholder={t('localize[language]')} />
         </SelectTrigger>
         <SelectContent>

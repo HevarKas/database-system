@@ -8,6 +8,7 @@ import {
   useRouteError,
   useSearchParams,
 } from '@remix-run/react';
+import Barcode from 'react-barcode';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { FaPencilAlt, FaTrash } from 'react-icons/fa';
@@ -107,7 +108,16 @@ const Books = () => {
                     <TableCell>
                       {(current_page - 1) * per_page + index + 1}
                     </TableCell>
-                    <TableCell>{book.barcode}</TableCell>
+                    <TableCell>
+                      <Barcode
+                        value={book.barcode}
+                        height={20}
+                        width={1}
+                        fontSize={16}
+                        textMargin={0}
+                        margin={0}
+                      />
+                    </TableCell>
                     <TableCell>{book.name}</TableCell>
                     <TableCell>{book.author}</TableCell>
                     <TableCell>{book.translator}</TableCell>
