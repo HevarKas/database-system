@@ -43,6 +43,7 @@ export const loader = async ({ request }: { request: Request }) => {
   const page = searchParams.get('page') || '1';
   const data = await getBooks(page, request);
 
+
   if (data?.data?.length === 0 && data.current_page > 1) {
     return redirect('/books');
   }
@@ -55,6 +56,7 @@ const Books = () => {
   const { data, current_page, last_page, per_page }: BooksDataType =
     useLoaderData();
   const { t } = useTranslation();
+
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -131,7 +133,7 @@ const Books = () => {
                       <span className="mx-1">{CURRENCY_UNIT}</span>
                     </TableCell>
                     <TableCell>{book.stock}</TableCell>
-                    <TableCell>{book.category}</TableCell>
+                    <TableCell>{book.category.name}</TableCell>
                     <TableCell className="flex gap-1">
                       <Link to={`${book.id}/delete-book?${searchParams}`}>
                         <Button variant="link" className="hover:text-red-500">

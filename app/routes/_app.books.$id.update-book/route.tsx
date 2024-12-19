@@ -63,7 +63,10 @@ export const action = async ({
   formDataToSend.append('stock', formData.get('stock') as string);
   formDataToSend.append('category_id', formData.get('category_id') as string);
   formDataToSend.append('barcode', formData.get('barcode') as string);
-  formDataToSend.append('cover_image', formData.get('cover_image') as File);
+  const coverImage = formData.get('cover_image');
+  if (coverImage instanceof File && coverImage.name) {
+    formDataToSend.append('cover_image', formData.get('cover_image') as File);
+  }
   formDataToSend.append('_method', 'PATCH');
 
   try {
@@ -283,11 +286,14 @@ function UpdateBook() {
             >
               {t('books.bookDetails.category')}
             </Label>
-            <Select name="category_id" required>
+            <Select 
+              name="category_id"
+              defaultValue={String(book?.category.id)}
+              required>
               <SelectTrigger>
                 <SelectValue
                   placeholder={
-                    book?.category || t('books.bookDetails.selectCategory')
+                    book?.category.name || t('books.bookDetails.selectCategory')
                   }
                 />
               </SelectTrigger>
