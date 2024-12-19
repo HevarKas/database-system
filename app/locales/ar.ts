@@ -12,6 +12,30 @@ export const arabicTranslations = {
     kurdish: 'الكردية',
     arabic: 'العربية',
   },
+  dashboard: {
+    newBooks: 'كتب جديدة',
+    orderToday: 'طلب اليوم',
+    differentCategories: 'فئات مختلفة',
+    totalBooks: 'إجمالي الكتب',
+    mostBookInCategory: 'أكثر كتب في الفئة',
+    completedOrders: {
+      name: 'الطلبات المكتملة',
+      today: 'اليوم',
+      average: 'متوسط',
+    },
+    income: {
+      name: 'الدخل',
+      totalIncome: 'إجمالي الدخل',
+      paid: 'مدفوع',
+      amountDue: 'المبلغ المستحق',
+    },
+    selectDate: {
+      day: 'يوم',
+      week: 'أسبوع',
+      month: 'شهر',
+      year: 'سنة',
+    },
+  },
   books: {
     book: 'كتاب',
     books: 'كتب',

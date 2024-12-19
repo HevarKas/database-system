@@ -12,6 +12,30 @@ export const kurdishTranslations = {
     kurdish: 'کوردی',
     arabic: 'عەرەبی',
   },
+  dashboard: {
+    newBooks: 'کتێبی نوێ',
+    orderToday: 'داواکاریکانی ئەمڕۆ',
+    differentCategories: 'هەموو بەشەکان',
+    totalBooks: 'هەموو کتێبەکان',
+    mostBookInCategory: 'زۆرترین کتێب لە بەشەکان',
+    completedOrders: {
+      name: 'داواکاری تەواو کراوەکان',
+      today: 'ئەمڕۆ',
+      average: 'ناوەند',
+    },
+    income: {
+      name: 'داهات',
+      totalIncome: 'کۆی داهات',
+      paid: 'پارەدان',
+      amountDue: 'موجودی پارە',
+    },
+    selectDate: {
+      day: 'ڕۆژ',
+      week: 'هەفتە',
+      month: 'مانگ',
+      year: 'ساڵ',
+    },
+  },
   books: {
     book: 'کتێب',
     books: 'کتێبەکان',

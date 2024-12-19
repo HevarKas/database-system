@@ -12,6 +12,30 @@ export const englishTranslations = {
     kurdish: 'Kurdish',
     arabic: 'Arabic',
   },
+  dashboard: {
+    newBooks: 'New Books',
+    orderToday: 'Order Today',
+    differentCategories: 'Different Categories',
+    totalBooks: 'Total Books',
+    mostBookInCategory: 'Most Books In Category',
+    completedOrders: {
+      name: 'Completed Orders',
+      today: 'Today',
+      average: 'Average',
+    },
+    income: {
+      name: 'Income',
+      totalIncome: 'Total Income',
+      paid: 'Paid',
+      amountDue: 'Amount Due',
+    },
+    selectDate: {
+      day: 'Day',
+      week: 'Week',
+      month: 'Month',
+      year: 'Year',
+    },
+  },
   books: {
     book: 'Book',
     books: 'Books',
