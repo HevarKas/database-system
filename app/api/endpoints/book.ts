@@ -92,3 +92,29 @@ export const deleteBook = async (id: string, request: Request) => {
 
   return response;
 };
+
+export const getBooksBySearch = async (page: string, search: string | null, request: Request) => {
+  const headers = await getEnrichedHeaders(request);
+
+  const searchParams = new URLSearchParams();
+  searchParams.set('page', page || '1');
+
+  if (search) {
+    searchParams.set('search', search);
+  }
+
+  const response = await fetch(buildUrl(`/api/admin/books?${searchParams}`), {
+    headers,
+  });
+
+  if (response.status === 401) {
+    throw new Error('Unauthorized to access this resource');
+  }
+
+  if (response.status !== 200) {
+    const errorResponse = await response.json();
+    throw errorResponse;
+  }
+
+  return response.json();
+};

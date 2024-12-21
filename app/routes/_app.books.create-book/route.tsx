@@ -46,7 +46,10 @@ export const action = async ({ request }: { request: Request }) => {
   formDataToSend.append('stock', formData.get('stock') as string);
   formDataToSend.append('category_id', formData.get('category_id') as string);
   formDataToSend.append('barcode', formData.get('barcode') as string);
-  formDataToSend.append('cover_image', formData.get('cover_image') as File);
+  const coverImage = formData.get('cover_image');
+  if (coverImage instanceof File && coverImage.name) {
+    formDataToSend.append('cover_image', formData.get('cover_image') as File);
+  }
 
   try {
     await createBook(request, formDataToSend);
