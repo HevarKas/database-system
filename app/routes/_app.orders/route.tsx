@@ -13,30 +13,7 @@ import { tostActionType } from '~/shared/types/toast';
 import { toast } from 'react-toastify';
 import { ConfirmationModal } from '~/components/modal/ConfirmationModal';
 import classNames from 'classnames';
-
-export type Book = {
-  id: number;
-  cover: string | null;
-  barcode: string;
-  name: string;
-  description: string;
-  category: { name: string }[];
-  author: string;
-  translator: string;
-  publish_year: number;
-  cost: number;
-  price: number;
-  stock: number;
-  quantity: number;
-};
-
-export type PaginationData = {
-  data: Book[];
-  per_page: number;
-  total: number;
-  current_page: number;
-  last_page: number;
-};
+import { Book, PaginationData } from '~/shared/types/pages/orders';
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -191,7 +168,7 @@ function Orders() {
   return (
     <section>
       <div className="flex justify-between items-first gap-4">
-        `<div className="flex-grow flex flex-col space-y-6">
+        <div className="flex-grow flex flex-col space-y-6">
           <Form method="get" className="flex items-center space-x-4">
             <Input
               type="text"

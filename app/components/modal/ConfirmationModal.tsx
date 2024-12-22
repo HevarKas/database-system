@@ -19,7 +19,7 @@ export const ConfirmationModal = ({ isOpen, onCancel, totalCost, totalPrice }: C
       <input type="hidden" name="customer_phone_number" value="123456789" />
       <input type="hidden" name="paid" value={totalCost} />
       <input type="hidden" name="total" value={totalPrice} />
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-96">
         <h3 className="text-xl font-semibold">
           {t("orders.confirmOrder")}
         </h3>

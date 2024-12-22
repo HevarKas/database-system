@@ -1,5 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import {
+  Form,
   isRouteErrorResponse,
   Link,
   Outlet,
@@ -36,12 +37,15 @@ import { formatNumberWithThousandSeparator } from '~/lib/utils';
 import { BooksDataType } from '~/shared/types/pages/book';
 import { CURRENCY_UNIT } from '~/shared/constants/general';
 
-import { getBooks } from '~/api/endpoints/book';
+import { getBooksBySearch } from '~/api/endpoints/book';
+import { Input } from '~/components/ui/input';
+import { useTheme } from '~/contexts/themeProvider';
 
 export const loader = async ({ request }: { request: Request }) => {
   const searchParams = new URL(request.url).searchParams;
   const page = searchParams.get('page') || '1';
-  const data = await getBooks(page, request);
+  const search = searchParams.get('search') || '';
+  const data = await getBooksBySearch(page, search, request);
 
 
   if (data?.data?.length === 0 && data.current_page > 1) {
@@ -52,11 +56,15 @@ export const loader = async ({ request }: { request: Request }) => {
 };
 
 const Books = () => {
+  const { t } = useTranslation();
+  const { isDarkMode } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const { data, current_page, last_page, per_page }: BooksDataType =
     useLoaderData();
-  const { t } = useTranslation();
 
+  const barcodeColor = isDarkMode ? '#ffffff' : '#111827';
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -71,6 +79,21 @@ const Books = () => {
     [last_page, setSearchParams],
   );
 
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (timer) {
+      clearTimeout(timer);
+    }
+
+    const newTimer = setTimeout(() => {
+      setSearchParams({ search: value });
+    }, 1000);
+
+    setTimer(newTimer);
+  }, [setSearchParams, timer]);
+
   const isPreviousDisabled = current_page <= 1;
   const isNextDisabled = current_page >= last_page;
 
@@ -79,6 +102,15 @@ const Books = () => {
       <Outlet />
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">{t('books.books')}</h1>
+        <Form method="get" className="flex items-center space-x-4">
+                    <Input
+                      type="text"
+                      placeholder={t('orders.scanBarcodeOrSearch')}
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                      className="flex-grow w-[300px]"
+                    />
+        </Form>
         <Link to={`create-book?${searchParams}`} className="flex items-center">
           <Button>{t('books.createBook')}</Button>
         </Link>
@@ -111,15 +143,17 @@ const Books = () => {
                       {(current_page - 1) * per_page + index + 1}
                     </TableCell>
                     <TableCell>
-                      <Barcode
-                        value={book.barcode}
-                        height={20}
-                        width={1}
-                        fontSize={16}
-                        textMargin={0}
-                        margin={0}
-                      />
-                    </TableCell>
+                    <Barcode
+                      value={book.barcode}
+                      height={20}
+                      width={1}
+                      fontSize={16}
+                      textMargin={0}
+                      margin={0}
+                      background={isDarkMode ? '#111827' : '#ffffff'}
+                      lineColor={barcodeColor}
+                    />
+                  </TableCell>
                     <TableCell>{book.name}</TableCell>
                     <TableCell>{book.author}</TableCell>
                     <TableCell>{book.translator}</TableCell>

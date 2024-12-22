@@ -8,7 +8,6 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { useLanguage } from '~/contexts/LanguageContext';
-import i18n from '~/i18n';
 
 const LanguageSwitcher: React.FC = () => {
   const { t } = useTranslation();
@@ -16,7 +15,6 @@ const LanguageSwitcher: React.FC = () => {
 
   const handleLanguageChange = (value: string) => {
     setLanguage(value as 'en' | 'ku' | 'ar');
-    i18n.changeLanguage(value);
   };
 
   return (

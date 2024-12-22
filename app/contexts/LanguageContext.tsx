@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import i18n from '~/i18n';
 
 type LanguageContextProps = {
   language: 'en' | 'ku' | 'ar';
@@ -10,15 +11,32 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(
   undefined,
 );
 
-export const LanguageProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [language, setLanguage] = useState<'en' | 'ku' | 'ar'>('en');
+const LANGUAGE_STORAGE_KEY = 'preferredLanguage';
+
+export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [language, setLanguage] = useState<'en' | 'ku' | 'ar' | null>(null);
+
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem(LANGUAGE_STORAGE_KEY) as 'en' | 'ku' | 'ar';
+    const initialLanguage = savedLanguage || 'en';
+    setLanguage(initialLanguage);
+    i18n.changeLanguage(initialLanguage);
+  }, []);
+
+  const handleSetLanguage = (lang: 'en' | 'ku' | 'ar') => {
+    setLanguage(lang);
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+    i18n.changeLanguage(lang);
+  };
 
   const rtl = language === 'ar' || language === 'ku';
 
+  if (language === null) {
+    return null;
+  }
+
   return (
-    <LanguageContext.Provider value={{ language, rtl, setLanguage }}>
+    <LanguageContext.Provider value={{ language, rtl, setLanguage: handleSetLanguage }}>
       {children}
     </LanguageContext.Provider>
   );
