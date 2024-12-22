@@ -27,7 +27,7 @@ export const kurdishTranslations = {
       name: 'داهات',
       totalIncome: 'کۆی داهات',
       paid: 'پارەدان',
-      amountDue: 'موجودی پارە',
+      amountDue: "قازانج"
     },
     selectDate: {
       day: 'ڕۆژ',
@@ -61,7 +61,7 @@ export const kurdishTranslations = {
       publishYear: 'ساڵی چاپکردن',
       cost: 'تێچوو',
       price: 'نرخ',
-      stock: 'هەژمار',
+      stock: 'ژمارە',
       category: 'بەش',
       selectCategory: 'بەش هەڵبژێرە',
       coverImage: 'وێنەی بەرگ',

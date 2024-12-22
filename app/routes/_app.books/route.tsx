@@ -116,33 +116,33 @@ const Books = () => {
         </Link>
       </div>
       <div className="overflow-auto">
-        <Table>
-          {data?.length === 0 ? (
-            <TableCaption>{t('books.noBooksFound')}</TableCaption>
-          ) : (
-            <>
-              <TableHeader>
-                <TableRow className="text-center">
-                  <TableHead>{t('books.bookDetails.ID')}</TableHead>
-                  <TableHead>{t('books.bookDetails.barcode')}</TableHead>
-                  <TableHead>{t('books.bookDetails.name')}</TableHead>
-                  <TableHead>{t('books.bookDetails.author')}</TableHead>
-                  <TableHead>{t('books.bookDetails.translator')}</TableHead>
-                  <TableHead>{t('books.bookDetails.publishYear')}</TableHead>
-                  <TableHead>{t('books.bookDetails.cost')}</TableHead>
-                  <TableHead>{t('books.bookDetails.price')}</TableHead>
-                  <TableHead>{t('books.bookDetails.stock')}</TableHead>
-                  <TableHead>{t('books.bookDetails.category')}</TableHead>
-                  <TableHead>{t('books.bookDetails.actions')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data?.map((book, index) => (
-                  <TableRow key={book.id} className="text-center">
-                    <TableCell>
-                      {(current_page - 1) * per_page + index + 1}
-                    </TableCell>
-                    <TableCell>
+      <Table>
+        {data?.length === 0 ? (
+          <TableCaption>{t('books.noBooksFound')}</TableCaption>
+        ) : (
+          <>
+            <TableHeader>
+              <TableRow className="text-center">
+                <TableHead className="text-center">{t('books.bookDetails.ID')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.barcode')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.name')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.author')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.translator')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.publishYear')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.cost')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.price')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.stock')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.category')}</TableHead>
+                <TableHead className="text-center">{t('books.bookDetails.actions')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data?.map((book, index) => (
+                <TableRow key={book.id} className="text-center">
+                  <TableCell className="text-center">
+                    {(current_page - 1) * per_page + index + 1}
+                  </TableCell>
+                  <TableCell className="flex justify-center text-center">
                     <Barcode
                       value={book.barcode}
                       height={20}
@@ -154,41 +154,39 @@ const Books = () => {
                       lineColor={barcodeColor}
                     />
                   </TableCell>
-                    <TableCell>{book.name}</TableCell>
-                    <TableCell>{book.author}</TableCell>
-                    <TableCell>{book.translator}</TableCell>
-                    <TableCell>{book.publish_year}</TableCell>
-                    <TableCell className="text-red-500">
-                      {formatNumberWithThousandSeparator(book.cost)}
-                      <span className="mx-1">{CURRENCY_UNIT}</span>
-                    </TableCell>
-                    <TableCell className="text-green-500">
-                      {formatNumberWithThousandSeparator(book.price)}
-                      <span className="mx-1">{CURRENCY_UNIT}</span>
-                    </TableCell>
-                    <TableCell>{book.stock}</TableCell>
-                    <TableCell>{book.category.name}</TableCell>
-                    <TableCell className="flex gap-1">
-                      <Link to={`${book.id}/delete-book?${searchParams}`}>
-                        <Button variant="link" className="hover:text-red-500">
-                          <FaTrash />
-                        </Button>
-                      </Link>
-                      <Link to={`${book.id}/update-book?${searchParams}`}>
-                        <Button
-                          variant="link"
-                          className="hover:text-yellow-500"
-                        >
-                          <FaPencilAlt />
-                        </Button>
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </>
-          )}
-        </Table>
+                  <TableCell className="text-center">{book.name}</TableCell>
+                  <TableCell className="text-center">{book.author}</TableCell>
+                  <TableCell className="text-center">{book.translator}</TableCell>
+                  <TableCell className="text-center">{book.publish_year}</TableCell>
+                  <TableCell className="text-red-500 text-center">
+                    {formatNumberWithThousandSeparator(book.cost)}
+                    <span className="mx-1">{CURRENCY_UNIT}</span>
+                  </TableCell>
+                  <TableCell className="text-green-500 text-center">
+                    {formatNumberWithThousandSeparator(book.price)}
+                    <span className="mx-1">{CURRENCY_UNIT}</span>
+                  </TableCell>
+                  <TableCell className="text-center">{book.stock}</TableCell>
+                  <TableCell className="text-center">{book.category.name}</TableCell>
+                  <TableCell className="flex justify-center gap-1 text-center">
+                    <Link to={`${book.id}/delete-book?${searchParams}`}>
+                      <Button variant="link" className="hover:text-red-500">
+                        <FaTrash />
+                      </Button>
+                    </Link>
+                    <Link to={`${book.id}/update-book?${searchParams}`}>
+                      <Button variant="link" className="hover:text-yellow-500">
+                        <FaPencilAlt />
+                      </Button>
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </>
+        )}
+      </Table>
+
       </div>
       {data?.length > 0 && (
         <Pagination>

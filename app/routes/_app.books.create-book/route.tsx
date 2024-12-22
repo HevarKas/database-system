@@ -24,6 +24,7 @@ import { createBook } from '~/api/endpoints/book';
 import { getCategory } from '~/api/endpoints/category';
 import { CategoryGetDataType } from '~/shared/types/pages/category';
 import { tostActionType } from '~/shared/types/toast';
+import { convertArabicToEnglishNumbers, filterNumericInput } from '~/lib/general';
 
 export const loader = async ({ request }: { request: Request }) => {
   const data = await getCategory(request);
@@ -74,17 +75,33 @@ function CreateCategory() {
   const { data }: { data?: CategoryGetDataType } = useLoaderData();
   const [imagePreview, setImagePreview] = useState<string | undefined>();
   const { t } = useTranslation();
+  const [publishYear, setPublishYear] = useState('');
+  const [cost, setCost] = useState('');
+  const [price, setPrice] = useState('');
+  const [stock, setStock] = useState('');
+  const [barcode, setBarcode] = useState('');
+
+  const handleChange = (setter: React.Dispatch<React.SetStateAction<string>>) => {
+    return (event: React.ChangeEvent<HTMLInputElement>) => {
+      const filteredValue = filterNumericInput(event.target.value);
+      setter(convertArabicToEnglishNumbers(filteredValue));
+    };
+  }
 
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
   };
 
-  const handleBarcodeKeyDown = (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
+  const handleBarcodeKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    // Allowing only number keys
+    if (event.key !== 'Backspace' && !/[\d٠-٩]/.test(event.key)) {
+      event.preventDefault();  // Prevent any non-numeric characters
     }
+  };
+
+  const handleBarcodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const filteredValue = filterNumericInput(event.target.value);
+    setBarcode(convertArabicToEnglishNumbers(filteredValue));  // Convert Arabic numerals to English
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,9 +206,11 @@ function CreateCategory() {
               {t('books.bookDetails.publishYear')}
             </Label>
             <Input
-              type="number"
+              type="text"
               name="publish_year"
               id="publish_year"
+              value={publishYear}
+              onChange={handleChange(setPublishYear)}
               required
               className="p-3 border rounded-md"
             />
@@ -207,9 +226,11 @@ function CreateCategory() {
               {t('books.bookDetails.cost')}
             </Label>
             <Input
-              type="number"
+              type="text"
               name="cost"
               id="cost"
+              value={cost}
+              onChange={handleChange(setCost)}
               required
               className="p-3 border rounded-md"
             />
@@ -222,9 +243,11 @@ function CreateCategory() {
               {t('books.bookDetails.price')}
             </Label>
             <Input
-              type="number"
+              type="text"
               name="price"
               id="price"
+              value={price}
+              onChange={handleChange(setPrice)}
               required
               className="p-3 border rounded-md"
             />
@@ -237,9 +260,11 @@ function CreateCategory() {
               {t('books.bookDetails.stock')}
             </Label>
             <Input
-              type="number"
+              type="text"
               name="stock"
               id="stock"
+              value={stock}
+              onChange={handleChange(setStock)}
               required
               className="p-3 border rounded-md"
             />
@@ -281,8 +306,10 @@ function CreateCategory() {
               name="barcode"
               id="barcode"
               maxLength={20}
-              required
+              value={barcode}
+              onChange={handleBarcodeChange}
               onKeyDown={handleBarcodeKeyDown}
+              required
               className="p-3 border rounded-md"
             />
           </div>

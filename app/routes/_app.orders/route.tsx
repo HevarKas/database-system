@@ -180,55 +180,56 @@ function Orders() {
           </Form>
 
           <div className="overflow-auto flex-grow h-[calc(100vh-300px)]">
-            <Table>
-              {booksList?.length === 0 ? (
-                <TableCaption>
-                  {t('orders.noBooksFound')}
-                </TableCaption>
-              ) : (
-                <>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>
-                        {t('orders.title')}
-                      </TableHead>
-                      <TableHead>
-                        {t('orders.author')}
-                      </TableHead>
-                      <TableHead>
-                        {t('orders.price')}
-                      </TableHead>
-                      <TableHead>
-                        {t('orders.actions')}
-                      </TableHead>
+          <Table>
+            {booksList?.length === 0 ? (
+              <TableCaption>
+                {t('orders.noBooksFound')}
+              </TableCaption>
+            ) : (
+              <>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center">
+                      {t('orders.title')}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t('orders.author')}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t('orders.price')}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t('orders.actions')}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {booksList?.map((book) => (
+                    <TableRow key={book.id}>
+                      <TableCell className="text-center">{book.name}</TableCell>
+                      <TableCell className="text-center">{book.author}</TableCell>
+                      <TableCell className="flex items-center justify-center">
+                        <Input
+                          type="text"
+                          value={prices[book.id] !== undefined ? prices[book.id] : book.price}
+                          onInput={(e) => handlePriceChange(book.id, (e.target as HTMLInputElement).value)}
+                          className="w-16"
+                        />
+                        <span className="ml-2">دينار</span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button onClick={() => handleAddToCart(book)} className="p-2 text-sm">
+                          <FaPlus />
+                        </Button>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {booksList?.map((book) => (
-                      <TableRow key={book.id}>
-                        <TableCell>{book.name}</TableCell>
-                        <TableCell>{book.author}</TableCell>
-                        <TableCell className='flex items-center'>
-                          <Input
-                            type="text"
-                            value={prices[book.id] !== undefined ? prices[book.id] : book.price}
-                            onInput={(e) => handlePriceChange(book.id, (e.target as HTMLInputElement).value)}
-                            className="w-16"
-                          />
-                          <span className="ml-2">دينار</span>
-                        </TableCell>
-                        <TableCell>
-                          <Button onClick={() => handleAddToCart(book)} className="p-2 text-sm">
-                            <FaPlus />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </>
-              )}
-            </Table>
-          </div>
+                  ))}
+                </TableBody>
+              </>
+            )}
+          </Table>
+        </div>
+
 
           {booksList?.length > 0 && (
             <Pagination>
@@ -267,29 +268,29 @@ function Orders() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>
+                  <TableHead className="text-center">
                     {t('orders.book')}
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="text-center">
                     {t('orders.quantity')}
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="text-center">
                     {t('orders.price')}
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="text-center">
                     {t('orders.total')}
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="text-center">
                     {t('orders.actions')}
                   </TableHead>
-                  <TableHead></TableHead>
+                  <TableHead className="text-center"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {cart.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">{item.name}</TableCell>
+                    <TableCell className="text-center">
                       <Button
                         size="sm"
                         onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
@@ -306,9 +307,9 @@ function Orders() {
                         <FaPlus />
                       </Button>
                     </TableCell>
-                    <TableCell>{item.price} دينار</TableCell>
-                    <TableCell>{item.quantity * item.price} دينار</TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">{item.price} دينار</TableCell>
+                    <TableCell className="text-center">{item.quantity * item.price} دينار</TableCell>
+                    <TableCell className="text-center">
                       <Button onClick={() => handleRemoveFromCart(item.id)} className="p-2 text-sm">
                         <FaTrash />
                       </Button>
@@ -317,6 +318,7 @@ function Orders() {
                 ))}
               </TableBody>
             </Table>
+
           </div>
 
           <div className="flex justify-between mt-6">
