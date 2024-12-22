@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import { ConfirmationModal } from '~/components/modal/ConfirmationModal';
 import classNames from 'classnames';
 import { Book, PaginationData } from '~/shared/types/pages/orders';
+import { convertArabicToEnglishNumbers, filterNumericInput } from '~/lib/general';
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -97,26 +98,32 @@ function Orders() {
   const isNextDisabled = current_page >= last_page;
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    let value = e.target.value;
+  
+    value = convertArabicToEnglishNumbers(value);
+  
     setSearchQuery(value);
-
+  
     if (timer) {
       clearTimeout(timer);
     }
-
+  
     const newTimer = setTimeout(() => {
       setSearchParams({ search: value });
     }, 1000);
-
+  
     setTimer(newTimer);
   }, [setSearchParams, timer]);
+  
 
   const handlePriceChange = (bookId: number, newPrice: string) => {
-    const numericPrice = newPrice.replace(/\D/g, '');
-    if (numericPrice) {
+    const filteredValue = filterNumericInput(newPrice); 
+    const englishValue = convertArabicToEnglishNumbers(filteredValue);
+  
+    if (englishValue !== "") {
       setPrices((prev) => ({
         ...prev,
-        [bookId]: Number(numericPrice),
+        [bookId]: parseInt(englishValue, 10),
       }));
     }
   };
@@ -209,12 +216,12 @@ function Orders() {
                       <TableCell className="text-center">{book.name}</TableCell>
                       <TableCell className="text-center">{book.author}</TableCell>
                       <TableCell className="flex items-center justify-center">
-                        <Input
-                          type="text"
-                          value={prices[book.id] !== undefined ? prices[book.id] : book.price}
-                          onInput={(e) => handlePriceChange(book.id, (e.target as HTMLInputElement).value)}
-                          className="w-16"
-                        />
+                      <Input
+                        type="text"
+                        value={prices[book.id] !== undefined ? prices[book.id] : book.price}
+                        onInput={(e) => handlePriceChange(book.id, (e.target as HTMLInputElement).value)}
+                        className="w-16"
+                      />
                         <span className="ml-2">دينار</span>
                       </TableCell>
                       <TableCell className="text-center">

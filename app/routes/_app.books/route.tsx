@@ -40,6 +40,7 @@ import { CURRENCY_UNIT } from '~/shared/constants/general';
 import { getBooksBySearch } from '~/api/endpoints/book';
 import { Input } from '~/components/ui/input';
 import { useTheme } from '~/contexts/themeProvider';
+import { convertArabicToEnglishNumbers } from '~/lib/general';
 
 export const loader = async ({ request }: { request: Request }) => {
   const searchParams = new URL(request.url).searchParams;
@@ -80,17 +81,20 @@ const Books = () => {
   );
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    let value = e.target.value;
+  
+    value = convertArabicToEnglishNumbers(value);
+  
     setSearchQuery(value);
-
+  
     if (timer) {
       clearTimeout(timer);
     }
-
+  
     const newTimer = setTimeout(() => {
       setSearchParams({ search: value });
     }, 1000);
-
+  
     setTimer(newTimer);
   }, [setSearchParams, timer]);
 

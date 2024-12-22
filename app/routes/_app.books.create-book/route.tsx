@@ -93,15 +93,14 @@ function CreateCategory() {
   };
 
   const handleBarcodeKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // Allowing only number keys
     if (event.key !== 'Backspace' && !/[\d٠-٩]/.test(event.key)) {
-      event.preventDefault();  // Prevent any non-numeric characters
+      event.preventDefault();
     }
   };
 
   const handleBarcodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const filteredValue = filterNumericInput(event.target.value);
-    setBarcode(convertArabicToEnglishNumbers(filteredValue));  // Convert Arabic numerals to English
+    setBarcode(convertArabicToEnglishNumbers(filteredValue));
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
