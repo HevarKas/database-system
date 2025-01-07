@@ -6,6 +6,7 @@ export const kurdishTranslations = {
     book: 'کتێب',
     category: 'بەش',
     order: 'داواکاری',
+    transaction: 'ئاڵوگۆڕ'
   },
   localize: {
     english: 'ئینگلیزی',
@@ -74,7 +75,7 @@ export const kurdishTranslations = {
     confirmOrder: 'داواکاری پەسەندکردن',
     areYouSureYouWantToProceedWithTheOrder: 'دڵنیایت کە دەتەوێت ئەم داواکاریە پەسەند بکەیت',
     confirm: 'پەسەندکردن',
-    cart: 'سەبەتەکان',
+    cart: 'سەبەتە',
     book: 'کتێب',
     quantity: 'ڕێژە',
     price: 'نرخ',
@@ -83,6 +84,10 @@ export const kurdishTranslations = {
     actions: 'کردارەکان',
     title: 'سەردێر',
     author: 'نووسەر',
+    paidLater: 'دواتر پارە ئەدات',
+    enterCustomerName: 'ناوی کریارەکە بنووسە',
+    enterCustomerPhoneNumber: 'ژمارەی تەلەفۆنی کریارەکە بنووسە',
+    enterPaidPrice: 'نرخی پارە بنووسە',
   },
   category: {
     category: 'بەش',
@@ -100,4 +105,23 @@ export const kurdishTranslations = {
       name: 'ناو',
     },
   },
+  transaction: {
+    title: 'ئاڵوگۆڕ',
+    scanBarcodeOrSearch: 'سکانی بارکۆد بکە یاخود بۆ ناو بگەڕێ',
+    completed: 'تەواو',
+    pending: 'چاوەڕوان',
+    noData: 'هیچ داتایەک نییە',
+    no: 'ژمارە',
+    customerName: 'ناوی کریارەکە',
+    customerPhone: 'ژمارەی تەلەفۆنی کریارەکە',
+    status: 'حالەت',
+    total: 'کۆی',
+    paid: 'پارەدان',
+    actions: 'کردارەکان',
+    deleteTransaction: 'سڕینەوە مامەڵە',
+    delete: 'سڕینەوە',
+    doyouwanttodeletethisTransaction: 'دڵنیایت کە دەتەوێت ئەم مامەڵە بسڕیتەوە',
+    updateTransaction: 'نوێکردنەوە مامەڵە',
+    update: 'نوێکردنەوە',
+  }
 };

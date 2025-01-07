@@ -21,3 +21,21 @@ export type PaginationData = {
   current_page: number;
   last_page: number;
 };
+
+
+export type transactionType = {
+  id: number;
+  customer_name: string;
+  customer_phone_number: string;
+  status: string; 
+  total: number;
+  paid: number;
+};
+
+export type TranscationDataType = {
+  current_page: number;
+  data: transactionType[];
+  last_page: number;
+  per_page: number;
+  total: number;
+};

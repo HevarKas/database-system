@@ -40,13 +40,17 @@ export const action = async ({ request }: { request: Request }) => {
   formDataToSend.append('name', formData.get('name') as string);
   formDataToSend.append('description', 'soon will be deleted');
   formDataToSend.append('author', formData.get('author') as string);
-  formDataToSend.append('translator', formData.get('translator') as string);
+  if (formData.get('translator')) {
+    formDataToSend.append('translator', formData.get('translator') as string);
+  }
   formDataToSend.append('publish_year', formData.get('publish_year') as string);
   formDataToSend.append('cost', formData.get('cost') as string);
   formDataToSend.append('price', formData.get('price') as string);
   formDataToSend.append('stock', formData.get('stock') as string);
   formDataToSend.append('category_id', formData.get('category_id') as string);
-  formDataToSend.append('barcode', formData.get('barcode') as string);
+  if (formData.get('barcode') as string) {
+    formDataToSend.append('barcode', formData.get('barcode') as string);
+  }
   const coverImage = formData.get('cover_image');
   if (coverImage instanceof File && coverImage.name) {
     formDataToSend.append('cover_image', formData.get('cover_image') as File);
@@ -193,7 +197,6 @@ function CreateCategory() {
               name="translator"
               id="translator"
               maxLength={50}
-              required
               className="p-3 border rounded-md"
             />
           </div>
@@ -308,7 +311,6 @@ function CreateCategory() {
               value={barcode}
               onChange={handleBarcodeChange}
               onKeyDown={handleBarcodeKeyDown}
-              required
               className="p-3 border rounded-md"
             />
           </div>

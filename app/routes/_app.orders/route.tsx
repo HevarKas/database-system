@@ -15,6 +15,7 @@ import { ConfirmationModal } from '~/components/modal/ConfirmationModal';
 import classNames from 'classnames';
 import { Book, PaginationData } from '~/shared/types/pages/orders';
 import { convertArabicToEnglishNumbers, filterNumericInput } from '~/lib/general';
+import { Checkbox } from "~/components/ui/checkbox"
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -38,7 +39,7 @@ export const action = async ({ request }: { request: Request }) => {
   const total = formData.get('total');
   const paid = formData.get('paid');
 
-  if ((total as string).trim() === "" || (paid as string).trim() === "" || total === "0" || paid === "0" || isNaN(Number(total)) || isNaN(Number(paid))) {
+  if ((total as string).trim() === "" || (paid as string).trim() === "" || total === "0" || isNaN(Number(total))) {
     return {
       type: 'error',
       toast: 'Failed to order.',
@@ -50,7 +51,7 @@ export const action = async ({ request }: { request: Request }) => {
   formDataToSend.append('customer_name', formData.get('customer_name') as string);
   formDataToSend.append('total', total as string);
   formDataToSend.append('paid', paid as string);
- 
+
   try {
     await postOrder(request, formDataToSend);
     return {
@@ -77,6 +78,13 @@ function Orders() {
   const [cart, setCart] = useState<Book[]>([]);
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPaidLater, setIsPaidLater] = useState(false);
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhoneNumber, setCustomerPhoneNumber] = useState('');
+  const [paidLaterValue, setPaidLaterValue] = useState('0');
+
+  const totalPrice = cart.reduce((total, item) => total + item.quantity * item.price, 0);
+  const paidPrice = isPaidLater ? Number(paidLaterValue) : totalPrice
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -128,6 +136,28 @@ function Orders() {
     }
   };
 
+  const handlePaidLaterChange = (newPrice: string) => {
+    const filteredValue = filterNumericInput(newPrice); 
+    const englishValue = convertArabicToEnglishNumbers(filteredValue);
+  
+    if (englishValue !== "") {
+      setPaidLaterValue(englishValue);
+    } else {
+      setPaidLaterValue('0');
+    }
+  };
+
+  const handlePhoneNumberChange = (newPhoneNumber: string) => {
+    const filteredValue = filterNumericInput(newPhoneNumber); 
+    const englishValue = convertArabicToEnglishNumbers(filteredValue);
+  
+    if (englishValue !== "") {
+      setCustomerPhoneNumber(englishValue);
+    } else {
+      setCustomerPhoneNumber('');
+    }
+  };
+
   const handleAddToCart = (book: Book) => {
     const updatedPrice = prices[book.id] !== undefined ? prices[book.id] : book.price;
 
@@ -155,9 +185,6 @@ function Orders() {
     setCart(updatedCart);
   };
 
-  const totalCost = cart.reduce((total, item) => total + item.quantity * item.cost, 0);
-  const totalPrice = cart.reduce((total, item) => total + item.quantity * item.price, 0);
-
   useEffect(() => {
     if (actionData) {
       if (actionData.type === 'success') {
@@ -166,6 +193,11 @@ function Orders() {
         closeModal()
         setSearchParams({});
         setCart([]);
+        setPrices({});
+        setCustomerName('');
+        setCustomerPhoneNumber('');
+        setPaidLaterValue('0');
+        setIsPaidLater(false);
       } else {
         toast.error(actionData.toast);
       }
@@ -270,8 +302,8 @@ function Orders() {
         </div>
 
         <div className="flex flex-col justify-between w-[600px] flex-shrink-0 h-screen max-h-[calc(100vh-200px)] bg-gray-100 dark:bg-gray-800 p-6">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Cart</h2>
+          <div className='overflow-auto flex-grow h-[calc(100vh-300px)]'>
+            <h2 className="text-xl font-semibold mb-4">{t("orders.cart")}</h2>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -328,29 +360,77 @@ function Orders() {
 
           </div>
 
-          <div className="flex justify-between mt-6">
-            <div>
-              <div>{t('orders.totalPrice')}: {totalPrice} دينار</div>
-            </div>
-            <div className="text-right">
-              <Button onClick={openModal} className="w-full">
-                {t('orders.confirmOrder')}
-              </Button>
-            </div>
+          <div className="flex justify-between items-start mt-6">
+            <div className="flex flex-col space-y-4 w-full">
+              <div>{t('orders.totalPrice')}: 
+                <span className={classNames("font-semibold mx-2 text-lg text-green-600", { "line-through": isPaidLater })}>
+                  {totalPrice} دينار</span>
+                </div>
+              <div className="flex items-center gap-4">
+                <Checkbox
+                  checked={isPaidLater}
+                  onCheckedChange={() => setIsPaidLater(!isPaidLater)}
+                />
+                <span>{t('orders.paidLater')}</span>
+              </div>
+
+              {isPaidLater && (
+                <div className="flex flex-wrap gap-4">
+                  <Input
+                    type="text"
+                    placeholder={t('orders.enterCustomerName')}
+                    name="customer_name"
+                    value={customerName}
+                    onInput={(e) => setCustomerName(e.currentTarget.value)}
+                    className="w-1/3 sm:w-auto"
+                  />
+                  <Input
+                    type="text"
+                    placeholder={t('orders.enterCustomerPhoneNumber')}
+                    name="customer_phone_number"
+                    value={customerPhoneNumber.toString()}
+                    onInput={(e) => handlePhoneNumberChange(e.currentTarget.value)}
+                    className="w-1/3 sm:w-auto"
+                  />
+                  <Input
+                    type="text"
+                    placeholder={t('orders.enterPaidPrice')}
+                    name="paid"
+                    value={paidLaterValue.toString()}
+                    onInput={(e) => handlePaidLaterChange(e.currentTarget.value)}
+                    className="w-1/3 sm:w-auto"
+                    disabled={!isPaidLater}
+                  />
+
+            </div>  
+            )}
+          </div>
+
+          <div className="text-right w-full sm:w-auto">
+            <Button onClick={openModal} className="w-full sm:w-auto">
+              {t('orders.confirmOrder')}
+            </Button>
           </div>
         </div>
 
 
+        </div>
+
+
       </div>
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onCancel={closeModal}
-        totalCost={totalCost}
-        totalPrice={totalPrice}
-      />
+        <ConfirmationModal
+          isOpen={isModalOpen}
+          onCancel={closeModal}
+          customerName={customerName && isPaidLater ? customerName : 'نەزانراو'}
+          customerPhoneNumber={customerPhoneNumber && isPaidLater ? customerPhoneNumber : '0'}
+          totalPrice={totalPrice}
+          paidPrice={paidPrice}
+        />
     </section>
   );
 }
+
+export default Orders;
 
 export function ErrorBoundary() {
   const error = useRouteError();
@@ -395,4 +475,3 @@ export function ErrorBoundary() {
 }
 
 
-export default Orders;

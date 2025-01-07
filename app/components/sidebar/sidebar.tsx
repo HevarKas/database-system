@@ -5,8 +5,10 @@ import { Tooltip } from 'react-tooltip';
 import AKlogo from '~/assets/AKlogo';
 
 import { PiBooksFill } from 'react-icons/pi';
+import { GrTransaction } from "react-icons/gr";
 import { HiDocumentReport } from 'react-icons/hi';
 import { MdCategory, MdOutlinePointOfSale } from 'react-icons/md';
+
 
 import useTooltip from '~/contexts/useTooltip';
 import { useTheme } from '~/contexts/themeProvider';
@@ -24,6 +26,7 @@ const Sidebar = () => {
   const bookLabel = t('navbar.book');
   const orderLabel = t('navbar.order');
   const categoryLabel = t('navbar.category');
+  const transactionLabel = t('navbar.transaction');
 
   const navItems = [
     {
@@ -49,6 +52,12 @@ const Sidebar = () => {
       icon: <MdOutlinePointOfSale size={32} />,
       tooltipId: 'order-tooltip',
       label: orderLabel,
+    },
+    {
+      to: '/transaction',
+      icon: <GrTransaction size={32} />,
+      tooltipId: 'transaction-tooltip',
+      label: transactionLabel,
     },
   ];
 
