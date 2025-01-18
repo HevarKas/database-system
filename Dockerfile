@@ -24,6 +24,7 @@ EXPOSE 3001
 
 # Set the NODE_ENV environment variable to production
 ENV NODE_ENV=production
+ENV API_URL="http://178.18.250.240:9050"
 
 # Start the Remix app in production mode using remix-serve
 CMD ["npm", "start"]
