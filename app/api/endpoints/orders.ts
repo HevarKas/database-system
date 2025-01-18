@@ -3,7 +3,7 @@ import { buildUrl, getEnrichedHeaders } from "../config";
 export const postOrder = async (request: Request, formDataToSend: FormData) => {
     const headers = await getEnrichedHeaders(request);
 
-    const response = await fetch(buildUrl(`/api/admin/orders`), {  // Updated URL
+    const response = await fetch(buildUrl(`/api/admin/orders`), {
         method: 'POST',
         headers,
         body: formDataToSend,

@@ -2,7 +2,7 @@ import { Form, redirect, useActionData, useNavigation } from '@remix-run/react';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import { Button } from '~/components/ui/button';
-import { tokenCookie } from '~/lib/auth/cookies';
+import { rolesCookie, tokenCookie } from '~/lib/auth/cookies';
 import { getAccessToken } from '~/api/endpoints/auth';
 
 export const action = async ({ request }: { request: Request }) => {
@@ -14,9 +14,18 @@ export const action = async ({ request }: { request: Request }) => {
   try {
     const loginData = await getAccessToken({ request, email, password });
 
+    const roles = loginData.data.roles || [];
+
+    const tokenCookieValue = await tokenCookie.serialize(loginData.data.token);
+    const rolesCookieValue = roles.length > 0 ? await rolesCookie.serialize(roles) : null;
+
+    const setCookieHeaders = rolesCookieValue
+      ? [tokenCookieValue, rolesCookieValue]
+      : [tokenCookieValue];
+
     return redirect('/dashboard', {
       headers: {
-        'Set-Cookie': await tokenCookie.serialize(loginData.data.token),
+        'Set-Cookie': setCookieHeaders.join(', '),
       },
     });
   } catch (error) {

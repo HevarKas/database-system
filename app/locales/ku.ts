@@ -28,7 +28,9 @@ export const kurdishTranslations = {
       name: 'داهات',
       totalIncome: 'کۆی داهات',
       paid: 'پارەدان',
-      amountDue: "قازانج"
+      amountDue: 'موجودی پارە',
+      cost: "تێچوو",
+      profit: 'قازانج',
     },
     selectDate: {
       day: 'ڕۆژ',
@@ -84,6 +86,7 @@ export const kurdishTranslations = {
     actions: 'کردارەکان',
     title: 'سەردێر',
     author: 'نووسەر',
+    stock: 'ژمارە',
     paidLater: 'دواتر پارە ئەدات',
     enterCustomerName: 'ناوی کریارەکە بنووسە',
     enterCustomerPhoneNumber: 'ژمارەی تەلەفۆنی کریارەکە بنووسە',

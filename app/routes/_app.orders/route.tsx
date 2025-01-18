@@ -36,35 +36,56 @@ export const loader = async ({ request }: { request: Request }) => {
 
 export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();
-  const total = formData.get('total');
-  const paid = formData.get('paid');
 
-  if ((total as string).trim() === "" || (paid as string).trim() === "" || total === "0" || isNaN(Number(total))) {
-    return {
-      type: 'error',
-      toast: 'Failed to order.',
-    };
+  const entries: Array<{ key: string, value: string }> = [];
+  for (const [key, value] of formData.entries()) {
+    entries.push({ key, value: value.toString() });
   }
 
+  const paidValue = entries.find(item => item.key === "paid")?.value;
+  const customerName = entries.find(item => item.key === "customer_name")?.value;
+  const customerPhoneNumber = entries.find(item => item.key === "customer_phone_number")?.value;
+
+  if (!paidValue || isNaN(Number(paidValue))) {
+    return { type: "error", toast: "Failed to order. Invalid payment amount." };
+  }
+
+  if (!customerName || !customerPhoneNumber) {
+    return { type: "error", toast: "Failed to order. Missing customer details." };
+  }
+
+  const books = entries.filter(item => item.key.startsWith("books"));
+  const booksData = books.reduce(
+    (acc: { [key: number]: { id: string; price: string; quantity: string } }, item) => {
+      const [, index, key] = item.key.match(/^books\[(\d+)\]\[(\w+)\]$/) || [];
+      if (index && key) {
+        const numericIndex = parseInt(index, 10);
+        if (!acc[numericIndex]) acc[numericIndex] = { id: "", price: "", quantity: "" };
+        acc[numericIndex][key as "id" | "price" | "quantity"] = item.value;
+      }
+      return acc;
+    },
+    {} as { [key: number]: { id: string; price: string; quantity: string } }
+  );
+
   const formDataToSend = new FormData();
-  formDataToSend.append('customer_phone_number', formData.get('customer_phone_number') as string);
-  formDataToSend.append('customer_name', formData.get('customer_name') as string);
-  formDataToSend.append('total', total as string);
-  formDataToSend.append('paid', paid as string);
+  formDataToSend.append("customer_name", customerName);
+  formDataToSend.append("customer_phone_number", customerPhoneNumber);
+  formDataToSend.append("paid", paidValue);
+
+  Object.entries(booksData).forEach(([index, book]) => {
+    formDataToSend.append(`books[${index}][id]`, book.id);
+    formDataToSend.append(`books[${index}][price]`, book.price);
+    formDataToSend.append(`books[${index}][quantity]`, book.quantity);
+  });
 
   try {
     await postOrder(request, formDataToSend);
-    return {
-      type: 'success',
-      toast: 'Order created successfully!',
-    };
+    return { type: "success", toast: "Order created successfully!" };
   } catch (error) {
-    return {
-      type: 'error',
-      toast: 'Failed to order.',
-    };
+    return { type: "error", toast: "Failed to order." };
   }
-}
+};
 
 function Orders() {
   const { books } = useLoaderData<{ books: PaginationData }>();
@@ -235,6 +256,9 @@ function Orders() {
                       {t('orders.author')}
                     </TableHead>
                     <TableHead className="text-center">
+                      {t('orders.stock')}
+                    </TableHead>
+                    <TableHead className="text-center">
                       {t('orders.price')}
                     </TableHead>
                     <TableHead className="text-center">
@@ -247,6 +271,7 @@ function Orders() {
                     <TableRow key={book.id}>
                       <TableCell className="text-center">{book.name}</TableCell>
                       <TableCell className="text-center">{book.author}</TableCell>
+                      <TableCell className="text-center">{book.stock}</TableCell>
                       <TableCell className="flex items-center justify-center">
                       <Input
                         type="text"
@@ -257,7 +282,7 @@ function Orders() {
                         <span className="ml-2">دينار</span>
                       </TableCell>
                       <TableCell className="text-center">
-                        <Button onClick={() => handleAddToCart(book)} className="p-2 text-sm">
+                        <Button onClick={() => handleAddToCart(book)} className="p-2 text-sm" disabled={book.stock <= 0}>
                           <FaPlus />
                         </Button>
                       </TableCell>
@@ -329,7 +354,7 @@ function Orders() {
                 {cart.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="text-center">{item.name}</TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center min-w-[200px]">
                       <Button
                         size="sm"
                         onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
@@ -401,10 +426,9 @@ function Orders() {
                     className="w-1/3 sm:w-auto"
                     disabled={!isPaidLater}
                   />
-
-            </div>  
-            )}
-          </div>
+              </div>  
+              )}
+            </div>
 
           <div className="text-right w-full sm:w-auto">
             <Button onClick={openModal} className="w-full sm:w-auto">
@@ -423,8 +447,8 @@ function Orders() {
           onCancel={closeModal}
           customerName={customerName && isPaidLater ? customerName : 'نەزانراو'}
           customerPhoneNumber={customerPhoneNumber && isPaidLater ? customerPhoneNumber : '0'}
-          totalPrice={totalPrice}
           paidPrice={paidPrice}
+          books= {cart}
         />
     </section>
   );

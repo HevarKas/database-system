@@ -23,13 +23,19 @@ import {
   Rectangle,
 } from 'recharts';
 import { getReports, getReportsByTimeRange } from '~/api/endpoints/reports';
-import { isRouteErrorResponse, useLoaderData, useRouteError, useSearchParams } from '@remix-run/react';
+import { isRouteErrorResponse, redirect, useLoaderData, useRouteError, useSearchParams } from '@remix-run/react';
 import { getDateRange } from '~/lib/general';
 import { incomeDataType, reportDataType, timeRangeType } from '~/shared/types/pages/dashboard';
 import { useTranslation } from 'react-i18next';
 import ErrorIcon from '~/assets/ErrorIcon';
+import { getRoles } from '~/lib/auth/cookies';
 
 export const loader = async ({ request }: { request: Request }) => {
+  const role = await getRoles(request)
+  if(role === null) {
+    return redirect("/books")
+  }
+  
   const reportData = await getReports(request);
 
   const url = new URL(request.url);
@@ -68,10 +74,12 @@ function Dashboard() {
     value: category.books_count,
   }));
 
+  const totalCost = incomeData.total - incomeData.profit;
+
   const transformedAreaData = [
     { name: t('dashboard.income.totalIncome'), income: incomeData.total },
-    { name: t('dashboard.income.paid'), income: incomeData.paid },  
-    { name: t('dashboard.income.amountDue'), income: incomeData.amount_due },
+    { name: t('dashboard.income.cost'), income: totalCost },  
+    { name: t('dashboard.income.profit'), income: incomeData.profit },
   ];
   
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', "#EE82EE"]
@@ -124,7 +132,7 @@ function Dashboard() {
                 data={pieDataReport}
                 cx="50%"
                 cy="50%"
-                outerRadius={80}
+                outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
                 label={({ percent }) => `${(percent * 100).toFixed(0)}%`}

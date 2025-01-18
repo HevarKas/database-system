@@ -4,6 +4,7 @@ import {
   redirect,
   useRouteError,
   isRouteErrorResponse,
+  useLoaderData,
 } from '@remix-run/react';
 import ErrorIcon from '~/assets/ErrorIcon';
 
@@ -11,23 +12,29 @@ import Header from '~/components/header/header';
 import Sidebar from '~/components/sidebar/sidebar';
 import LogoutComponent from '~/components/header/logoutModal';
 
-import { getToken } from '~/lib/auth/cookies';
+import { getRoles, getToken } from '~/lib/auth/cookies';
 import { useLanguage } from '~/contexts/LanguageContext';
 import classNames from 'classnames';
 
 export const loader = async ({ request }: { request: Request }) => {
+  const role = await getRoles(request);
+
   const token = await getToken(request);
 
   if (!token) {
     return redirect('/login');
   }
 
-  return null;
+
+  const roleValue = role ? role[0] : role
+
+  return roleValue
 };
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const { rtl } = useLanguage();
+  const loaderData: string | null = useLoaderData();
 
   const handleCloseModal = () => {
     setIsOpen(false);
@@ -39,7 +46,7 @@ function App() {
 
   return (
     <div className={classNames('flex h-screen', { rtl: rtl })}>
-      <Sidebar />
+      <Sidebar role={loaderData} />
       <div className="flex flex-col w-full">
         <Header onOpenModal={handleOpenModal} />
         <main className="flex-1 p-8 overflow-auto bg-white dark:bg-gray-900">

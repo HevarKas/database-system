@@ -15,7 +15,7 @@ import { useTheme } from '~/contexts/themeProvider';
 import { useLanguage } from '~/contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 
-const Sidebar = () => {
+const Sidebar = ({ role }: { role: string | null }) => {
   const { isDarkMode } = useTheme();
   const { tooltip, showTooltip, handleMouseEnter, handleMouseLeave } =
     useTooltip();
@@ -61,12 +61,14 @@ const Sidebar = () => {
     },
   ];
 
+  const filteredNavItems = role === 'admin' ? navItems : navItems.filter(item => item.to !== '/dashboard');
+
   return (
     <aside className="flex h-screen overflow-hidden flex-shrink-0">
       <div className="flex flex-col items-center gap-4 bg-gray-200 dark:bg-gray-800 w-24">
         <AKlogo isDarkMode={isDarkMode} height={100} width={100} />
         <nav className="py-4 flex flex-col items-center w-full">
-          {navItems.map(({ to, icon, tooltipId, label }) => (
+          {filteredNavItems.map(({ to, icon, tooltipId, label }) => (
             <NavLink
               key={to}
               to={to}

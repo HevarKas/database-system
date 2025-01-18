@@ -12,7 +12,7 @@ import {
 import Barcode from 'react-barcode';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { FaPencilAlt, FaTrash } from 'react-icons/fa';
+import { FaPencilAlt, FaTrash, FaEye } from 'react-icons/fa';
 import ErrorIcon from '~/assets/ErrorIcon';
 
 import { Button } from '~/components/ui/button';
@@ -98,6 +98,24 @@ const Books = () => {
     setTimer(newTimer);
   }, [setSearchParams, timer]);
 
+  const downloadBookBarcode = async (id: string) => {
+    const response = await fetch(`http://178.18.250.240:9050/api/admin/books/${id}/barcode`);
+  
+    if (!response.ok) {
+      throw new Error('Failed to download barcode');
+    }
+  
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `barcode-${id}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+  
   const isPreviousDisabled = current_page <= 1;
   const isNextDisabled = current_page >= last_page;
 
@@ -107,13 +125,13 @@ const Books = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">{t('books.books')}</h1>
         <Form method="get" className="flex items-center space-x-4">
-                    <Input
-                      type="text"
-                      placeholder={t('orders.scanBarcodeOrSearch')}
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                      className="flex-grow w-[300px]"
-                    />
+        <Input
+          type="text"
+          placeholder={t('orders.scanBarcodeOrSearch')}
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="flex-grow w-[300px]"
+        />
         </Form>
         <Link to={`create-book?${searchParams}`} className="flex items-center">
           <Button>{t('books.createBook')}</Button>
@@ -150,7 +168,7 @@ const Books = () => {
                     <Barcode
                       value={book.barcode}
                       height={20}
-                      width={1}
+                      width={1.2}
                       fontSize={16}
                       textMargin={0}
                       margin={0}
@@ -183,6 +201,13 @@ const Books = () => {
                         <FaPencilAlt />
                       </Button>
                     </Link>
+                    <Button
+                      variant="link"
+                      className="hover:text-yellow-500"
+                      onClick={() => downloadBookBarcode(book.id.toString())}
+                    >
+                      <FaEye />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

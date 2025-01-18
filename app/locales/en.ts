@@ -29,6 +29,8 @@ export const englishTranslations = {
       totalIncome: 'Total Income',
       paid: 'Paid',
       amountDue: 'Amount Due',
+      cost: "Cost",
+      profit: 'Profit',
     },
     selectDate: {
       day: 'Day',
@@ -83,6 +85,7 @@ export const englishTranslations = {
     confirm: 'Confirm',
     title: 'Title',
     author: 'Author',
+    stock: 'Stock',
     actions: 'Actions',
     paidLater: 'Paid Later',
     enterCustomerName: 'Enter Customer Name',

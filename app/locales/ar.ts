@@ -29,6 +29,8 @@ export const arabicTranslations = {
       totalIncome: 'إجمالي الدخل',
       paid: 'مدفوع',
       amountDue: 'المبلغ المستحق',
+      cost: "التكلفة",
+      profit: 'ربح',
     },
     selectDate: {
       day: 'يوم',
@@ -84,6 +86,7 @@ export const arabicTranslations = {
     title: 'العنوان',
     author: 'المؤلف',
     actions: 'الإجراءات',
+    stock: 'المخزون',
     paidLater: 'الدفع لاحقا',
     enterCustomerName: 'أدخل اسم العميل',
     enterCustomerPhoneNumber: 'أدخل رقم هاتف العميل',

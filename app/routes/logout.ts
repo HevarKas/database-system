@@ -1,5 +1,5 @@
 import { redirect } from '@remix-run/node';
-import { getToken, removeToken } from '~/lib/auth/cookies';
+import { getToken, removeToken, removeRoles } from '~/lib/auth/cookies';
 
 export const loader = async ({ request }: { request: Request }) => {
   const token = await getToken(request);
@@ -12,9 +12,12 @@ export const loader = async ({ request }: { request: Request }) => {
 };
 
 export const action = async () => {
+  const tokenClear = await removeToken();
+  const rolesClear = await removeRoles();
+
   return redirect('/login', {
     headers: {
-      'Set-Cookie': await removeToken(),
+      'Set-Cookie': [tokenClear, rolesClear].join(', '), // Pass both cookies as a single string
     },
   });
 };

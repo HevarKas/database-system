@@ -17,6 +17,7 @@ export type incomeDataType = {
     total: number;
     paid: number;
     amount_due: number;
+    profit: number;
 };
 
 export type timeRangeType = 'day' | 'week' | 'month' | 'year';
