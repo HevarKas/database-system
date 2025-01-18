@@ -13,9 +13,6 @@ RUN npm install
 # Copy the rest of the app
 COPY . .
 
-# Generate Prisma Client
-RUN npx prisma generate
-
 # Build the Remix app (this generates the `build` directory)
 RUN npm run build
 
