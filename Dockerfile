@@ -20,7 +20,7 @@ RUN npx prisma generate --schema
 RUN npm run build
 
 # Expose the port the app will run on
-EXPOSE 3001
+EXPOSE 3000
 
 # Set the NODE_ENV environment variable to production
 ENV NODE_ENV=production
