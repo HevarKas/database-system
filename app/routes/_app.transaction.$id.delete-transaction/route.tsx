@@ -25,10 +25,18 @@ export const loader = async ({
   params: { id: string };
 }) => {
   const id = params.id;
-  const data = await getOrderById(id, request);
 
-  return { data };
+  try {
+    const data = await getOrderById(id, request);
+
+    return { data };
+  } catch (error) {
+    console.error('Error fetching order:', error);
+
+    throw new Response('Unable to load the order. Please try again later.', { status: 500 });
+  }
 };
+
 
 export const action = async ({
   request,

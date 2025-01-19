@@ -31,25 +31,31 @@ import ErrorIcon from '~/assets/ErrorIcon';
 import { getRoles } from '~/lib/auth/cookies';
 
 export const loader = async ({ request }: { request: Request }) => {
-  const role = await getRoles(request)
-  if(role === null) {
-    return redirect("/books")
+  try {
+    const role = await getRoles(request);
+
+    if (role === null) {
+      return redirect("/books");
+    }
+
+    const reportData = await getReports(request);
+
+    const url = new URL(request.url);
+    const timeRange = url.searchParams.get('timeRange') || 'day';
+
+    const { from, to } = getDateRange(timeRange);
+
+    const incomeData = await getReportsByTimeRange(request, from, to);
+
+    return { 
+      reportData,
+      incomeData,
+      timeRange,
+    };
+  } catch (error) {
+    console.error("Error fetching loader data:", error);
+    return redirect('/'); 
   }
-  
-  const reportData = await getReports(request);
-
-  const url = new URL(request.url);
-  const timeRange = url.searchParams.get('timeRange') || 'day';
-
-  const { from, to } = getDateRange(timeRange);
-
-  const incomeData = await getReportsByTimeRange(request, from, to);
-
-  return { 
-    reportData,
-    incomeData,
-    timeRange,
-  };
 };
 
 function Dashboard() {

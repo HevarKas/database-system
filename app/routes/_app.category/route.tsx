@@ -2,6 +2,7 @@ import {
   isRouteErrorResponse,
   Link,
   Outlet,
+  redirect,
   useLoaderData,
   useRouteError,
 } from '@remix-run/react';
@@ -17,9 +18,13 @@ import { CategoryGetDataType } from '~/shared/types/pages/category';
 import { getCategory } from '~/api/endpoints/category';
 
 export const loader = async ({ request }: { request: Request }) => {
-  const data = await getCategory(request);
-
-  return { data };
+  try {
+    const data = await getCategory(request);
+    return { data };
+  } catch (error) {
+    console.error("Error fetching category:", error);
+    return redirect('/');
+  }
 };
 
 function Category() {

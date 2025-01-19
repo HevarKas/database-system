@@ -42,14 +42,21 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 
 export const loader = async ({ request }: { request: Request }) => {
   const searchParams = new URL(request.url).searchParams;
+
   const page = searchParams.get('page') || '1';
   const search = searchParams.get('search') || '';
   const status = searchParams.get('status') || 'pending';
 
-  const data = await getOrders(page, status, search, request);
+  try {
+    const data = await getOrders(page, status, search, request);
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw new Response('Unable to load orders. Please try again later.', { status: 500 });
+  }
 };
+
 
 const Transaction = () => {
   const { t } = useTranslation();

@@ -17,18 +17,21 @@ import { useLanguage } from '~/contexts/LanguageContext';
 import classNames from 'classnames';
 
 export const loader = async ({ request }: { request: Request }) => {
-  const role = await getRoles(request);
+  try {
+    const role = await getRoles(request);
+    const token = await getToken(request);
 
-  const token = await getToken(request);
+    if (!token) {
+      return redirect('/login');
+    }
 
-  if (!token) {
-    return redirect('/login');
+    const roleValue = role ? role[0] : role;
+
+    return roleValue;
+  } catch (error) {
+    console.error("Error in loader:", error);
+    return redirect('/');
   }
-
-
-  const roleValue = role ? role[0] : role
-
-  return roleValue
 };
 
 function App() {

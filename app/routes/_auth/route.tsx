@@ -3,13 +3,19 @@ import AKlogo from '~/assets/AKlogo';
 import { getToken } from '~/lib/auth/cookies';
 
 export const loader = async ({ request }: { request: Request }) => {
-  const token = await getToken(request);
+  try {
+    const token = await getToken(request);
 
-  if (token) {
-    return redirect('/dashboard');
+    if (token) {
+      return redirect('/dashboard');
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error fetching token:', error);
+
+    throw new Response('Unable to fetch token. Please try again later.', { status: 500 });
   }
-
-  return null;
 };
 
 function Auth() {

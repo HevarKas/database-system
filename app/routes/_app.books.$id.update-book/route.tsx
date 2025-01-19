@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Form,
+  redirect,
   useActionData,
   useLoaderData,
   useNavigate,
@@ -34,11 +35,16 @@ export const loader = async ({
   request: Request;
   params: { id: string };
 }) => {
-  const id = params.id;
-  const book = await getBookById(id, request);
-  const category = await getCategory(request);
+  try {
+    const id = params.id;
+    const book = await getBookById(id, request);
+    const category = await getCategory(request);
 
-  return { book, category };
+    return { book, category };
+  } catch (error) {
+    console.error("Error in loader:", error);
+    return redirect('/'); // Redirect to home page in case of error
+  }
 };
 
 export const action = async ({

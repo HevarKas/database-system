@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Form,
+  redirect,
   useActionData,
   useLoaderData,
   useNavigate,
@@ -27,9 +28,13 @@ import { tostActionType } from '~/shared/types/toast';
 import { convertArabicToEnglishNumbers, filterNumericInput } from '~/lib/general';
 
 export const loader = async ({ request }: { request: Request }) => {
-  const data = await getCategory(request);
-
-  return { data };
+  try {
+    const data = await getCategory(request);
+    return { data };
+  } catch (error) {
+    console.error("Error in loader:", error);
+    return redirect('/');
+  }
 };
 
 export const action = async ({ request }: { request: Request }) => {

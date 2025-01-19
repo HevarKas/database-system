@@ -43,17 +43,21 @@ import { useTheme } from '~/contexts/themeProvider';
 import { convertArabicToEnglishNumbers } from '~/lib/general';
 
 export const loader = async ({ request }: { request: Request }) => {
-  const searchParams = new URL(request.url).searchParams;
-  const page = searchParams.get('page') || '1';
-  const search = searchParams.get('search') || '';
-  const data = await getBooksBySearch(page, search, request);
+  try {
+    const searchParams = new URL(request.url).searchParams;
+    const page = searchParams.get('page') || '1';
+    const search = searchParams.get('search') || '';
+    const data = await getBooksBySearch(page, search, request);
 
+    if (data?.data?.length === 0 && data.current_page > 1) {
+      return redirect('/books');
+    }
 
-  if (data?.data?.length === 0 && data.current_page > 1) {
-    return redirect('/books');
+    return data;
+  } catch (error) {
+    console.error("Error in loader:", error);
+    return redirect('/'); 
   }
-
-  return data;
 };
 
 const Books = () => {

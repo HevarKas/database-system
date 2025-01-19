@@ -30,9 +30,11 @@ export const loader = async ({ request }: { request: Request }) => {
     const data = await getBooksBySearch(page, search, request);
     return { books: data };
   } catch (error) {
+    console.error('Error fetching books:', error);
     throw new Response('Unable to load books. Please try again later.', { status: 500 });
   }
 };
+
 
 export const action = async ({ request }: { request: Request }) => {
   const formData = await request.formData();

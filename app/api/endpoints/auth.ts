@@ -24,6 +24,8 @@ export const getAccessToken = async ({
     headers,
   });
 
+  console.log('response', response);
+
   if (response.status !== 200) {
     const errorResponse = await response.json();
     throw errorResponse;
