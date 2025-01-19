@@ -53,11 +53,13 @@ export const loader = async ({ request }: { request: Request }) => {
       return redirect('/books');
     }
 
-    return data;
+    return data || { data: [], current_page: 1, last_page: 1 }; 
   } catch (error) {
     console.error("Error in loader:", error);
   }
 };
+
+
 
 const Books = () => {
   const { t } = useTranslation();
