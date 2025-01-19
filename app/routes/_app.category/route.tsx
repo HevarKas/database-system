@@ -2,7 +2,6 @@ import {
   isRouteErrorResponse,
   Link,
   Outlet,
-  redirect,
   useLoaderData,
   useRouteError,
 } from '@remix-run/react';
@@ -23,7 +22,6 @@ export const loader = async ({ request }: { request: Request }) => {
     return { data };
   } catch (error) {
     console.error("Error fetching category:", error);
-    return redirect('/');
   }
 };
 

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Form,
-  redirect,
   useActionData,
   useLoaderData,
   useNavigate,
@@ -33,7 +32,6 @@ export const loader = async ({ request }: { request: Request }) => {
     return { data };
   } catch (error) {
     console.error("Error in loader:", error);
-    return redirect('/');
   }
 };
 

@@ -54,7 +54,6 @@ export const loader = async ({ request }: { request: Request }) => {
     };
   } catch (error) {
     console.error("Error fetching loader data:", error);
-    return redirect('/'); 
   }
 };
 

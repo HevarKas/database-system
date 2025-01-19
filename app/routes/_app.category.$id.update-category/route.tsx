@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import {
   Form,
-  redirect,
   useActionData,
   useLoaderData,
   useNavigate,
@@ -32,7 +31,6 @@ export const loader = async ({
     return { data };
   } catch (error) {
     console.error("Error fetching category by ID:", error);
-    return redirect('/');
   }
 };
 

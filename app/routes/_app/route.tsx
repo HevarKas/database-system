@@ -30,7 +30,6 @@ export const loader = async ({ request }: { request: Request }) => {
     return roleValue;
   } catch (error) {
     console.error("Error in loader:", error);
-    return redirect('/');
   }
 };
 

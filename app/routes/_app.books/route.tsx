@@ -56,7 +56,6 @@ export const loader = async ({ request }: { request: Request }) => {
     return data;
   } catch (error) {
     console.error("Error in loader:", error);
-    return redirect('/'); 
   }
 };
 
