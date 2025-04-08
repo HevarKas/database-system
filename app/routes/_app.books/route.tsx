@@ -12,7 +12,8 @@ import {
 import Barcode from 'react-barcode';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { FaPencilAlt, FaTrash, FaEye } from 'react-icons/fa';
+import { FaPencilAlt, FaTrash } from 'react-icons/fa';
+import { FaDownload } from 'react-icons/fa6';
 import ErrorIcon from '~/assets/ErrorIcon';
 
 import { Button } from '~/components/ui/button';
@@ -53,19 +54,20 @@ export const loader = async ({ request }: { request: Request }) => {
       return redirect('/books');
     }
 
-    return data || { data: [], current_page: 1, last_page: 1 }; 
+    return data || { data: [], current_page: 1, last_page: 1 };
   } catch (error) {
-    console.error("Error in loader:", error);
+    console.error('Error in loader:', error);
+    throw new Response('Failed to load books', { status: 500 });
   }
 };
-
-
 
 const Books = () => {
   const { t } = useTranslation();
   const { isDarkMode } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('search') || '',
+  );
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const { data, current_page, last_page, per_page }: BooksDataType =
     useLoaderData();
@@ -85,31 +87,36 @@ const Books = () => {
     [last_page, setSearchParams],
   );
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
-  
-    value = convertArabicToEnglishNumbers(value);
-  
-    setSearchQuery(value);
-  
-    if (timer) {
-      clearTimeout(timer);
-    }
-  
-    const newTimer = setTimeout(() => {
-      setSearchParams({ search: value });
-    }, 1000);
-  
-    setTimer(newTimer);
-  }, [setSearchParams, timer]);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      let value = e.target.value;
+
+      value = convertArabicToEnglishNumbers(value);
+
+      setSearchQuery(value);
+
+      if (timer) {
+        clearTimeout(timer);
+      }
+
+      const newTimer = setTimeout(() => {
+        setSearchParams({ search: value });
+      }, 1000);
+
+      setTimer(newTimer);
+    },
+    [setSearchParams, timer],
+  );
 
   const downloadBookBarcode = async (id: string) => {
-    const response = await fetch(`http://178.18.250.240:9050/api/admin/books/${id}/barcode`);
-  
+    const response = await fetch(
+      `http://178.18.250.240:9050/api/admin/books/${id}/barcode`,
+    );
+
     if (!response.ok) {
       throw new Error('Failed to download barcode');
     }
-  
+
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -120,7 +127,7 @@ const Books = () => {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
   };
-  
+
   const isPreviousDisabled = current_page <= 1;
   const isNextDisabled = current_page >= last_page;
 
@@ -130,97 +137,134 @@ const Books = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">{t('books.books')}</h1>
         <Form method="get" className="flex items-center space-x-4">
-        <Input
-          type="text"
-          placeholder={t('orders.scanBarcodeOrSearch')}
-          value={searchQuery}
-          onChange={handleSearchChange}
-          className="flex-grow w-[300px]"
-        />
+          <Input
+            type="text"
+            placeholder={t('orders.scanBarcodeOrSearch')}
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="flex-grow w-[300px]"
+          />
         </Form>
         <Link to={`create-book?${searchParams}`} className="flex items-center">
           <Button>{t('books.createBook')}</Button>
         </Link>
       </div>
       <div className="overflow-auto">
-      <Table>
-        {data?.length === 0 ? (
-          <TableCaption>{t('books.noBooksFound')}</TableCaption>
-        ) : (
-          <>
-            <TableHeader>
-              <TableRow className="text-center">
-                <TableHead className="text-center">{t('books.bookDetails.ID')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.barcode')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.name')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.author')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.translator')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.publishYear')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.cost')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.price')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.stock')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.category')}</TableHead>
-                <TableHead className="text-center">{t('books.bookDetails.actions')}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data?.map((book, index) => (
-                <TableRow key={book.id} className="text-center">
-                  <TableCell className="text-center">
-                    {(current_page - 1) * per_page + index + 1}
-                  </TableCell>
-                  <TableCell className="flex justify-center text-center">
-                    <Barcode
-                      value={book.barcode}
-                      height={20}
-                      width={1.2}
-                      fontSize={16}
-                      textMargin={0}
-                      margin={0}
-                      background={isDarkMode ? '#111827' : '#ffffff'}
-                      lineColor={barcodeColor}
-                    />
-                  </TableCell>
-                  <TableCell className="text-center">{book.name}</TableCell>
-                  <TableCell className="text-center">{book.author}</TableCell>
-                  <TableCell className="text-center">{book.translator}</TableCell>
-                  <TableCell className="text-center">{book.publish_year}</TableCell>
-                  <TableCell className="text-red-500 text-center">
-                    {formatNumberWithThousandSeparator(book.cost)}
-                    <span className="mx-1">{CURRENCY_UNIT}</span>
-                  </TableCell>
-                  <TableCell className="text-green-500 text-center">
-                    {formatNumberWithThousandSeparator(book.price)}
-                    <span className="mx-1">{CURRENCY_UNIT}</span>
-                  </TableCell>
-                  <TableCell className="text-center">{book.stock}</TableCell>
-                  <TableCell className="text-center">{book.category.name}</TableCell>
-                  <TableCell className="flex justify-center gap-1 text-center">
-                    <Link to={`${book.id}/delete-book?${searchParams}`}>
-                      <Button variant="link" className="hover:text-red-500">
-                        <FaTrash />
-                      </Button>
-                    </Link>
-                    <Link to={`${book.id}/update-book?${searchParams}`}>
-                      <Button variant="link" className="hover:text-yellow-500">
-                        <FaPencilAlt />
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="link"
-                      className="hover:text-yellow-500"
-                      onClick={() => downloadBookBarcode(book.id.toString())}
-                    >
-                      <FaEye />
-                    </Button>
-                  </TableCell>
+        <Table>
+          {data?.length === 0 ? (
+            <TableCaption>{t('books.noBooksFound')}</TableCaption>
+          ) : (
+            <>
+              <TableHeader>
+                <TableRow className="text-center">
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.ID')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.barcode')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.name')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.author')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.translator')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.publishYear')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.cost')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.price')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.stock')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.category')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('books.bookDetails.actions')}
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </>
-        )}
-      </Table>
-
+              </TableHeader>
+              <TableBody>
+                {data?.map((book, index) => (
+                  <TableRow key={book.id} className="text-center">
+                    <TableCell className="text-center">
+                      {(current_page - 1) * per_page + index + 1}
+                    </TableCell>
+                    <TableCell className="flex justify-center text-center">
+                      <Barcode
+                        value={book.barcode}
+                        height={20}
+                        width={1.2}
+                        fontSize={16}
+                        textMargin={0}
+                        margin={0}
+                        background={isDarkMode ? '#111827' : '#ffffff'}
+                        lineColor={barcodeColor}
+                      />
+                    </TableCell>
+                    <TableCell className="text-center">{book.name}</TableCell>
+                    <TableCell className="text-center">{book.author}</TableCell>
+                    <TableCell className="text-center">
+                      {book.translator}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {book.publish_year}
+                    </TableCell>
+                    <TableCell className="text-red-500 text-center">
+                      {formatNumberWithThousandSeparator(book.cost)}
+                      <span className="mx-1">{CURRENCY_UNIT}</span>
+                    </TableCell>
+                    <TableCell className="text-green-500 text-center">
+                      {formatNumberWithThousandSeparator(book.price)}
+                      <span className="mx-1">{CURRENCY_UNIT}</span>
+                    </TableCell>
+                    <TableCell
+                      className={classNames('text-center', {
+                        'bg-red-200 dark:bg-red-600 hover:bg-red-100 dark:hover:bg-red-500':
+                          book.stock <= 1,
+                      })}
+                    >
+                      {book.stock}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {book.category.name}
+                    </TableCell>
+                    <TableCell className="flex justify-center gap-1 text-center">
+                      <Link to={`${book.id}/delete-book?${searchParams}`}>
+                        <Button variant="link" className="hover:text-red-500">
+                          <FaTrash />
+                        </Button>
+                      </Link>
+                      <Link to={`${book.id}/update-book?${searchParams}`}>
+                        <Button
+                          variant="link"
+                          className="hover:text-yellow-500"
+                        >
+                          <FaPencilAlt />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="link"
+                        className="hover:text-blue-500"
+                        onClick={() => downloadBookBarcode(book.id.toString())}
+                      >
+                        <FaDownload />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </>
+          )}
+        </Table>
       </div>
       {data?.length > 0 && (
         <Pagination>
@@ -236,11 +280,38 @@ const Books = () => {
               />
             </PaginationItem>
             <PaginationItem>
-              <span className="font-semibold">
-                {t('books.page')} {current_page}
-              </span>
-              <span className="mx-2">{t('books.of')}</span>
-              <span className="font-bold">{last_page}</span>
+              <div className="flex items-center justify-center">
+                <Input
+                  type="number"
+                  value={current_page}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    if (value >= 1 && value <= last_page) {
+                      handlePageChange(value);
+                    }
+                  }}
+                  className="w-16 px-2 text-center"
+                  min={1}
+                  max={last_page}
+                  onFocus={(e) => e.target.select()}
+                  onBlur={(e) => {
+                    if (e.target.value === '') {
+                      handlePageChange(1);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const value = Number(e.currentTarget.value);
+                      if (value >= 1 && value <= last_page) {
+                        handlePageChange(value);
+                      }
+                    }
+                  }}
+                />
+
+                <span className="mx-2">{t('books.of')}</span>
+                <span className="font-bold">{last_page}</span>
+              </div>
             </PaginationItem>
             <PaginationItem>
               <PaginationNext

@@ -32,11 +32,11 @@ export const loader = async ({
     return { data };
   } catch (error) {
     console.error('Error fetching order data:', error);
-
-    throw new Response('Unable to load order data. Please try again later.', { status: 500 });
+    throw new Response('Unable to load order data. Please try again later.', {
+      status: 500,
+    });
   }
 };
-
 
 export const action = async ({
   request,

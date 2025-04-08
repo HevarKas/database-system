@@ -23,71 +23,113 @@ import {
   Rectangle,
 } from 'recharts';
 import { getReports, getReportsByTimeRange } from '~/api/endpoints/reports';
-import { isRouteErrorResponse, redirect, useLoaderData, useRouteError, useSearchParams } from '@remix-run/react';
+import {
+  isRouteErrorResponse,
+  redirect,
+  useLoaderData,
+  useRouteError,
+  useSearchParams,
+} from '@remix-run/react';
 import { getDateRange } from '~/lib/general';
-import { incomeDataType, reportDataType, timeRangeType } from '~/shared/types/pages/dashboard';
+import {
+  incomeDataType,
+  reportDataType,
+  timeRangeType,
+} from '~/shared/types/pages/dashboard';
 import { useTranslation } from 'react-i18next';
 import ErrorIcon from '~/assets/ErrorIcon';
 import { getRoles } from '~/lib/auth/cookies';
+import { useState } from 'react';
+import { Input } from '~/components/ui/input';
+import { Button } from '~/components/ui/button';
 
 export const loader = async ({ request }: { request: Request }) => {
   try {
     const role = await getRoles(request);
 
-    if (role === null) {
-      return redirect("/books");
+    if (!role && role !== 'admin') {
+      return redirect('/books');
     }
 
     const reportData = await getReports(request);
 
     const url = new URL(request.url);
-    const timeRange = url.searchParams.get('timeRange') || 'day';
+    let timeRange;
+    let from = url.searchParams.get('from') || null;
+    let to = url.searchParams.get('to') || null;
 
-    const { from, to } = getDateRange(timeRange);
+    if (!from || !to) {
+      timeRange = url.searchParams.get('timeRange') || 'day';
+      const { from: startDate, to: endDate } = getDateRange(timeRange);
+      from = startDate;
+      to = endDate;
+    }
 
     const incomeData = await getReportsByTimeRange(request, from, to);
 
-    return { 
+    return {
       reportData,
       incomeData,
       timeRange,
     };
   } catch (error) {
-    console.error("Error fetching loader data:", error);
+    console.error('Error fetching loader data:', error);
+    throw new Response('Failed to load data', { status: 500 });
   }
 };
 
 function Dashboard() {
   const { t } = useTranslation();
-  const { reportData, incomeData, timeRange }: 
-  { reportData: reportDataType, incomeData: incomeDataType, timeRange: timeRangeType } 
-  = useLoaderData();
+  const {
+    reportData,
+    incomeData,
+    timeRange,
+  }: {
+    reportData: reportDataType;
+    incomeData: incomeDataType;
+    timeRange: timeRangeType;
+  } = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedTimeRange = searchParams.get('timeRange') || timeRange;
+  const { from, to } = getDateRange(selectedTimeRange);
+  const [selectedFromDate, setSelectedFromDate] = useState<string | null>(from);
+  const [selectedToDate, setSelectedToDate] = useState<string | null>(to);
 
   const handleTimeRangeChange = (range: string) => {
-    setSearchParams({ timeRange: range });
+    const { from, to } = getDateRange(range);
+    setSelectedFromDate(from);
+    setSelectedToDate(to);
+    setSearchParams({
+      timeRange: range,
+      from,
+      to,
+    });
   };
 
-  const transformedData  = [
-    { name: t('dashboard.completedOrders.today'), pv: reportData.orders_today || 0 },
-    { name: t('dashboard.completedOrders.average'), uv: 50},
+  const transformedData = [
+    {
+      name: t('dashboard.completedOrders.today'),
+      pv: reportData.orders_today || 0,
+    },
+    { name: t('dashboard.completedOrders.average'), uv: 50 },
   ];
 
-  const pieDataReport = reportData.categories_with_most_books_in_stock.map((category) => ({
-    name: category.name,
-    value: category.books_count,
-  }));
+  const pieDataReport = reportData.categories_with_most_books_in_stock.map(
+    (category) => ({
+      name: category.name,
+      value: category.books_count,
+    }),
+  );
 
   const totalCost = incomeData.total - incomeData.profit;
 
   const transformedAreaData = [
     { name: t('dashboard.income.totalIncome'), income: incomeData.total },
-    { name: t('dashboard.income.cost'), income: totalCost },  
+    { name: t('dashboard.income.cost'), income: totalCost },
     { name: t('dashboard.income.profit'), income: incomeData.profit },
   ];
-  
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', "#EE82EE"]
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#EE82EE'];
 
   return (
     <section className="space-y-6 p-6">
@@ -104,25 +146,21 @@ function Dashboard() {
           <h3 className="text-lg font-semibold mb-2">
             {t('dashboard.orderToday')}
           </h3>
-          <p className="text-2xl font-bold">
-          {reportData.orders_today || 0}
-          </p>
+          <p className="text-2xl font-bold">{reportData.orders_today || 0}</p>
         </Card>
         <Card className="p-4">
           <h3 className="text-lg font-semibold mb-2">
             {t('dashboard.differentCategories')}
           </h3>
           <p className="text-2xl font-bold">
-          {reportData.total_categories || 0}
+            {reportData.total_categories || 0}
           </p>
         </Card>
         <Card className="p-4">
           <h3 className="text-lg font-semibold mb-2">
             {t('dashboard.totalBooks')}
           </h3>
-          <p className="text-2xl font-bold">
-          {reportData.total_books || 0}
-          </p>
+          <p className="text-2xl font-bold">{reportData.total_books || 0}</p>
         </Card>
       </div>
 
@@ -150,7 +188,10 @@ function Dashboard() {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value: number, name: string) => [`${value}`, `${name}`]}
+                formatter={(value: number, name: string) => [
+                  `${value}`,
+                  `${name}`,
+                ]}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -176,41 +217,88 @@ function Dashboard() {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="pv" fill="#8884d8" activeBar={<Rectangle fill="pink" stroke="blue" />} />
-              <Bar dataKey="uv" fill="#82ca9d" activeBar={<Rectangle fill="gold" stroke="purple" />} />
+              <Bar
+                dataKey="pv"
+                fill="#8884d8"
+                activeBar={<Rectangle fill="pink" stroke="blue" />}
+              />
+              <Bar
+                dataKey="uv"
+                fill="#82ca9d"
+                activeBar={<Rectangle fill="gold" stroke="purple" />}
+              />
             </BarChart>
           </ResponsiveContainer>
         </Card>
       </div>
 
       <Card className="p-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col md:flex-row justify-between md:items-center mb-4 gap-4">
           <h3 className="text-lg font-semibold">
             {t('dashboard.income.name')}
           </h3>
-          <div className="w-32">
-            <Select value={selectedTimeRange} onValueChange={handleTimeRangeChange}>
-              <SelectTrigger>
-                <SelectValue placeholder={selectedTimeRange} />
-              </SelectTrigger>
-              <SelectContent>
-                {['day', 'week', 'month', 'year'].map((item) => (
-                  <SelectItem key={item} value={item}>
-                    {t(`dashboard.selectDate.${item}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+
+          <div className="flex items-center gap-4">
+            <div className="w-32">
+              <Select
+                value={selectedTimeRange}
+                onValueChange={handleTimeRangeChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={selectedTimeRange || 'Select'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {['day', 'week', 'month', 'year'].map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {t(`dashboard.selectDate.${item}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Input
+              type="date"
+              value={selectedFromDate || ''}
+              onChange={(e) => setSelectedFromDate(e.target.value)}
+              className="w-36"
+            />
+            <Input
+              type="date"
+              value={selectedToDate || ''}
+              onChange={(e) => setSelectedToDate(e.target.value)}
+              className="w-36"
+            />
+            <Button
+              disabled={
+                !selectedFromDate ||
+                !selectedToDate ||
+                selectedFromDate > selectedToDate
+              }
+              onClick={() => {
+                if (
+                  selectedFromDate &&
+                  selectedToDate &&
+                  selectedFromDate <= selectedToDate
+                ) {
+                  setSearchParams({
+                    from: selectedFromDate,
+                    to: selectedToDate,
+                  });
+                }
+              }}
+            >
+              {t('dashboard.selectDate.apply')}
+            </Button>
           </div>
         </div>
-
         <ResponsiveContainer width="100%" height={400}>
           <AreaChart
             data={transformedAreaData}
             margin={{
               top: 10,
               right: 30,
-              left: 0,
+              left: 20,
               bottom: 0,
             }}
           >
@@ -232,7 +320,6 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
 
 export function ErrorBoundary() {
   const error = useRouteError();
@@ -275,5 +362,3 @@ export function ErrorBoundary() {
     </div>
   );
 }
-
-

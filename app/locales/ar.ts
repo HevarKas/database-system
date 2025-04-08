@@ -29,7 +29,7 @@ export const arabicTranslations = {
       totalIncome: 'إجمالي الدخل',
       paid: 'مدفوع',
       amountDue: 'المبلغ المستحق',
-      cost: "التكلفة",
+      cost: 'التكلفة',
       profit: 'ربح',
     },
     selectDate: {
@@ -37,6 +37,7 @@ export const arabicTranslations = {
       week: 'أسبوع',
       month: 'شهر',
       year: 'سنة',
+      apply: 'تطبيق',
     },
   },
   books: {
@@ -81,7 +82,8 @@ export const arabicTranslations = {
     total: 'المجموع',
     totalPrice: 'السعر الكلي',
     confirmOrder: 'تأكيد الطلب',
-    areYouSureYouWantToProceedWithTheOrder: 'هل أنت متأكد أنك تريد المتابعة مع الطلب',
+    areYouSureYouWantToProceedWithTheOrder:
+      'هل أنت متأكد أنك تريد المتابعة مع الطلب',
     confirm: 'تأكيد',
     title: 'العنوان',
     author: 'المؤلف',
@@ -114,7 +116,7 @@ export const arabicTranslations = {
     completed: 'مكتمل',
     pending: 'قيد الانتظار',
     noData: 'لا توجد بيانات',
-    no: "معرف",
+    no: 'معرف',
     customerName: 'اسم العميل',
     customerPhone: 'رقم هاتف العميل',
     status: 'الحالة',
@@ -128,5 +130,6 @@ export const arabicTranslations = {
     doyouwanttodeletethisTransaction: 'هل تريد حذف هذه المعاملة',
     updateTransaction: 'تحديث المعاملة',
     update: 'تحديث',
-  }
+    books: 'الكتب',
+  },
 };

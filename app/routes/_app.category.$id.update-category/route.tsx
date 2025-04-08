@@ -30,7 +30,8 @@ export const loader = async ({
 
     return { data };
   } catch (error) {
-    console.error("Error fetching category by ID:", error);
+    console.error('Error fetching category by ID:', error);
+    throw new Response('Failed to load category', { status: 500 });
   }
 };
 

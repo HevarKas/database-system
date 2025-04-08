@@ -6,11 +6,11 @@ import {
   useRouteError,
 } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
-import { FaPencilAlt, FaTrash } from 'react-icons/fa';
+import { FaPencilAlt } from 'react-icons/fa';
 import ErrorIcon from '~/assets/ErrorIcon';
 
 import { Button } from '~/components/ui/button';
-import { Card, CardHeader, CardTitle, CardFooter } from '~/components/ui/card';
+import { Card, CardHeader, CardTitle } from '~/components/ui/card';
 
 import { CategoryGetDataType } from '~/shared/types/pages/category';
 
@@ -21,7 +21,8 @@ export const loader = async ({ request }: { request: Request }) => {
     const data = await getCategory(request);
     return { data };
   } catch (error) {
-    console.error("Error fetching category:", error);
+    console.error('Error fetching category:', error);
+    throw new Response('Failed to load category', { status: 500 });
   }
 };
 
@@ -45,23 +46,17 @@ function Category() {
           {data.map((category) => (
             <Card
               key={category.id}
-              className="flex flex-col items-center justify-center dark:bg-gray-800"
+              className="flex items-center justify-center dark:bg-gray-800"
             >
               <CardHeader>
                 <CardTitle className="break-all">{category.name}</CardTitle>
               </CardHeader>
-              <CardFooter className="flex gap-2">
-                <Link to={`${category.id}/delete-category`}>
-                  <Button variant="link" className="hover:text-red-500">
-                    <FaTrash />
-                  </Button>
-                </Link>
-                <Link to={`${category.id}/update-category`}>
-                  <Button variant="link" className="hover:text-yellow-500">
-                    <FaPencilAlt />
-                  </Button>
-                </Link>
-              </CardFooter>
+
+              <Link to={`${category.id}/update-category`}>
+                <Button variant="link" className="hover:text-yellow-500">
+                  <FaPencilAlt />
+                </Button>
+              </Link>
             </Card>
           ))}
         </div>

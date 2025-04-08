@@ -57,7 +57,6 @@ export const loader = async ({ request }: { request: Request }) => {
   }
 };
 
-
 const Transaction = () => {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -161,6 +160,7 @@ const Transaction = () => {
                   <TableHead className="text-center">{t('transaction.no')}</TableHead>
                   <TableHead className="text-center">{t('transaction.customerName')}</TableHead>
                   <TableHead className="text-center">{t('transaction.customerPhone')}</TableHead>
+                  <TableHead className="text-center">{t('transaction.books')}</TableHead>
                   <TableHead className="text-center">{t('transaction.status')}</TableHead>
                   <TableHead className="text-center">{t('transaction.total')}</TableHead>
                   <TableHead className="text-center">{t('transaction.paid')}</TableHead>
@@ -175,15 +175,22 @@ const Transaction = () => {
                     </TableCell>
                     <TableCell className="text-center">{transaction.customer_name}</TableCell>
                     <TableCell className="text-center">{transaction.customer_phone_number}</TableCell>
+                    <TableCell className="text-center max-w-[200px]">
+                      {transaction.books.map((book, index) => (
+                        <span key={book.id}>
+                          {book.name}
+                          {index < transaction.books.length - 1 && ', '}
+                        </span>
+                      ))}
+                    </TableCell>
                     <TableCell className="text-center">
                       <span className={classNames('px-2 py-1 rounded-full text-xs font-semibold', {
                         'bg-yellow-500 text-white': transaction.status === 'pending',
                         'bg-green-500 text-white': transaction.status === 'completed',
                       })}>
                         {transaction.status}
-                      
                       </span>
-                      </TableCell>
+                    </TableCell>
                     <TableCell className="text-center text-green-500">
                       {formatNumberWithThousandSeparator(transaction.total)}
                       <span className="mx-1">{CURRENCY_UNIT}</span>

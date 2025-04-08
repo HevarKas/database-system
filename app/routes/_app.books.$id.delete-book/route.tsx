@@ -30,7 +30,8 @@ export const loader = async ({
 
     return { data };
   } catch (error) {
-    console.error("Error in loader:", error);
+    console.error('Error in loader:', error);
+    throw new Response('Failed to load books', { status: 500 });
   }
 };
 

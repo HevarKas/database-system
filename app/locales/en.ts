@@ -29,7 +29,7 @@ export const englishTranslations = {
       totalIncome: 'Total Income',
       paid: 'Paid',
       amountDue: 'Amount Due',
-      cost: "Cost",
+      cost: 'Cost',
       profit: 'Profit',
     },
     selectDate: {
@@ -37,6 +37,7 @@ export const englishTranslations = {
       week: 'Week',
       month: 'Month',
       year: 'Year',
+      apply: 'Apply',
     },
   },
   books: {
@@ -81,7 +82,8 @@ export const englishTranslations = {
     total: 'Total',
     totalPrice: 'Total Price',
     confirmOrder: 'Confirm Order',
-    areYouSureYouWantToProceedWithTheOrder: 'Are you sure you want to proceed with the order?',
+    areYouSureYouWantToProceedWithTheOrder:
+      'Are you sure you want to proceed with the order?',
     confirm: 'Confirm',
     title: 'Title',
     author: 'Author',
@@ -128,5 +130,6 @@ export const englishTranslations = {
     doyouwanttodeletethisTransaction: 'Do you want to delete this transaction?',
     updateTransaction: 'Update Transaction',
     update: 'Update',
-  }
+    books: 'Books',
+  },
 };

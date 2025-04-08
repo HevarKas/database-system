@@ -25,11 +25,12 @@ export const loader = async ({ request }: { request: Request }) => {
       return redirect('/login');
     }
 
-    const roleValue = role ? role[0] : role;
+    const roleValue = role ? role : null;
 
     return roleValue;
   } catch (error) {
-    console.error("Error in loader:", error);
+    console.error('Error in loader:', error);
+    throw new Response('Failed to load books', { status: 500 });
   }
 };
 

@@ -22,6 +22,13 @@ export type PaginationData = {
   last_page: number;
 };
 
+export type transactionBookType = {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  cost: number;
+};
 
 export type transactionType = {
   id: number;
@@ -30,6 +37,7 @@ export type transactionType = {
   status: string; 
   total: number;
   paid: number;
+  books: transactionBookType[];
 };
 
 export type TranscationDataType = {

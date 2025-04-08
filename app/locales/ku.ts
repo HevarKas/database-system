@@ -6,7 +6,7 @@ export const kurdishTranslations = {
     book: 'کتێب',
     category: 'بەش',
     order: 'داواکاری',
-    transaction: 'ئاڵوگۆڕ'
+    transaction: 'ئاڵوگۆڕ',
   },
   localize: {
     english: 'ئینگلیزی',
@@ -29,7 +29,7 @@ export const kurdishTranslations = {
       totalIncome: 'کۆی داهات',
       paid: 'پارەدان',
       amountDue: 'موجودی پارە',
-      cost: "تێچوو",
+      cost: 'تێچوو',
       profit: 'قازانج',
     },
     selectDate: {
@@ -37,6 +37,7 @@ export const kurdishTranslations = {
       week: 'هەفتە',
       month: 'مانگ',
       year: 'ساڵ',
+      apply: 'بەکاربەرەوە',
     },
   },
   books: {
@@ -75,7 +76,8 @@ export const kurdishTranslations = {
     scanBarcodeOrSearch: 'بارکۆد یان کتێب بگەڕێنەوە...',
     noBooksFound: 'هیچ کتێبێک نەدۆزرایەوە',
     confirmOrder: 'داواکاری پەسەندکردن',
-    areYouSureYouWantToProceedWithTheOrder: 'دڵنیایت کە دەتەوێت ئەم داواکاریە پەسەند بکەیت',
+    areYouSureYouWantToProceedWithTheOrder:
+      'دڵنیایت کە دەتەوێت ئەم داواکاریە پەسەند بکەیت',
     confirm: 'پەسەندکردن',
     cart: 'سەبەتە',
     book: 'کتێب',
@@ -126,5 +128,6 @@ export const kurdishTranslations = {
     doyouwanttodeletethisTransaction: 'دڵنیایت کە دەتەوێت ئەم مامەڵە بسڕیتەوە',
     updateTransaction: 'نوێکردنەوە مامەڵە',
     update: 'نوێکردنەوە',
-  }
+    Books: 'کتێبەکان',
+  },
 };

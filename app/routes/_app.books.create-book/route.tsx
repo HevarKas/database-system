@@ -24,14 +24,18 @@ import { createBook } from '~/api/endpoints/book';
 import { getCategory } from '~/api/endpoints/category';
 import { CategoryGetDataType } from '~/shared/types/pages/category';
 import { tostActionType } from '~/shared/types/toast';
-import { convertArabicToEnglishNumbers, filterNumericInput } from '~/lib/general';
+import {
+  convertArabicToEnglishNumbers,
+  filterNumericInput,
+} from '~/lib/general';
 
 export const loader = async ({ request }: { request: Request }) => {
   try {
     const data = await getCategory(request);
     return { data };
   } catch (error) {
-    console.error("Error in loader:", error);
+    console.error('Error in loader:', error);
+    throw new Response('Failed to load books', { status: 500 });
   }
 };
 
@@ -88,18 +92,22 @@ function CreateCategory() {
   const [stock, setStock] = useState('');
   const [barcode, setBarcode] = useState('');
 
-  const handleChange = (setter: React.Dispatch<React.SetStateAction<string>>) => {
+  const handleChange = (
+    setter: React.Dispatch<React.SetStateAction<string>>,
+  ) => {
     return (event: React.ChangeEvent<HTMLInputElement>) => {
       const filteredValue = filterNumericInput(event.target.value);
       setter(convertArabicToEnglishNumbers(filteredValue));
     };
-  }
+  };
 
   const handleClose = () => {
     navigate(`/books?${searchParams}`);
   };
 
-  const handleBarcodeKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleBarcodeKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (event.key !== 'Backspace' && !/[\d٠-٩]/.test(event.key)) {
       event.preventDefault();
     }

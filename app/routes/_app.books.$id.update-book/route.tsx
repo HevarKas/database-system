@@ -41,7 +41,8 @@ export const loader = async ({
 
     return { book, category };
   } catch (error) {
-    console.error("Error in loader:", error);
+    console.error('Error in loader:', error);
+    throw new Response('Failed to load books', { status: 500 });
   }
 };
 
@@ -290,10 +291,11 @@ function UpdateBook() {
             >
               {t('books.bookDetails.category')}
             </Label>
-            <Select 
+            <Select
               name="category_id"
               defaultValue={String(book?.category.id)}
-              required>
+              required
+            >
               <SelectTrigger>
                 <SelectValue
                   placeholder={

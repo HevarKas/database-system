@@ -28,6 +28,7 @@ const Modal = ({
   const navigation = useNavigation();
 
   const isLoading = navigation.state === 'loading';
+  const isSubmitting = navigation.state === 'submitting';
   if (!isOpen) return null;
 
   const overlayClasses = 'fixed inset-0 bg-black bg-opacity-50';
@@ -87,9 +88,9 @@ const Modal = ({
               type="button"
               onClick={onSubmit}
               className={submitButtonClasses}
-              disabled={isLoading}
+              disabled={isLoading || isSubmitting}
             >
-              {isLoading ? t('loading') : submitLabel}
+              {isLoading || isSubmitting ? t('loading') : submitLabel}
             </Button>
           </footer>
         )}

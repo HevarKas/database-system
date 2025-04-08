@@ -14,19 +14,16 @@ export const action = async ({ request }: { request: Request }) => {
   try {
     const loginData = await getAccessToken({ request, email, password });
 
-    const roles = loginData.data.roles || [];
+    const [roles] = loginData.data.roles || [];
 
     const tokenCookieValue = await tokenCookie.serialize(loginData.data.token);
-    const rolesCookieValue = roles.length > 0 ? await rolesCookie.serialize(roles) : null;
-
-    const setCookieHeaders = rolesCookieValue
-      ? [tokenCookieValue, rolesCookieValue]
-      : [tokenCookieValue];
+    const rolesCookieValue = roles ? await rolesCookie.serialize(roles) : null;
 
     return redirect('/dashboard', {
-      headers: {
-        'Set-Cookie': setCookieHeaders.join(', '),
-      },
+      headers: new Headers([
+        ['Set-Cookie', tokenCookieValue],
+        rolesCookieValue ? ['Set-Cookie', rolesCookieValue] : null,
+      ].filter(Boolean) as [string, string][]),
     });
   } catch (error) {
     return {

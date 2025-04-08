@@ -15,9 +15,10 @@ interface ConfirmationModalProps {
   customerPhoneNumber: string;
   paidPrice: number;
   books: Book[];
+  disabled: boolean;
 }
 
-export const ConfirmationModal = ({ isOpen, onCancel, customerName, customerPhoneNumber, paidPrice, books }: ConfirmationModalProps) => {
+export const ConfirmationModal = ({ isOpen, onCancel, customerName, customerPhoneNumber, paidPrice, books, disabled }: ConfirmationModalProps) => {
   const { t } = useTranslation();
   if (!isOpen) return null;
 
@@ -43,7 +44,7 @@ export const ConfirmationModal = ({ isOpen, onCancel, customerName, customerPhon
           <p>{t("orders.areYouSureYouWantToProceedWithTheOrder")}</p>
           <div className="mt-4 flex justify-end space-x-4">
             <Button onClick={onCancel} variant="secondary">Cancel</Button>
-            <Button type="submit">
+            <Button type="submit" disabled={disabled}>
               {t("orders.confirm")}
             </Button>
           </div>

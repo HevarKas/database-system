@@ -32,11 +32,11 @@ export const loader = async ({
     return { data };
   } catch (error) {
     console.error('Error fetching order:', error);
-
-    throw new Response('Unable to load the order. Please try again later.', { status: 500 });
+    throw new Response('Unable to load the order. Please try again later.', {
+      status: 500,
+    });
   }
 };
-
 
 export const action = async ({
   request,
@@ -77,7 +77,7 @@ function DeleteTransaction() {
 
   const handleSubmit = () => {
     if (deleteOrderFormRef.current) {
-        deleteOrderFormRef.current.requestSubmit();
+      deleteOrderFormRef.current.requestSubmit();
     }
   };
 
@@ -108,7 +108,9 @@ function DeleteTransaction() {
       >
         <p>
           {t('transaction.doyouwanttodeletethisTransaction')}
-          <span className="px-1 font-semibold">{loaderData.data.customer_name}</span>
+          <span className="px-1 font-semibold">
+            {loaderData.data.customer_name}
+          </span>
           {rtl ? '؟' : '?'}
         </p>
       </Form>
