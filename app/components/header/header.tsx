@@ -9,7 +9,7 @@ type HeaderProps = {
 
 const Header = ({ onOpenModal }: HeaderProps) => {
   return (
-    <header className="flex justify-end items-center w-full h-[60px] px-8 bg-gray-100 dark:bg-gray-700">
+    <header className="flex justify-end items-center w-full h-[60px] px-8 bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-800 border-b dark:border-gray-700">
       <UserAccount />
       <LanguageSwitcher />
       <ThemeToggleButton />
