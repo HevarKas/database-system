@@ -19,6 +19,9 @@ export const englishTranslations = {
     differentCategories: 'Different Categories',
     totalBooks: 'Total Books',
     mostBookInCategory: 'Most Books In Category',
+    totalStock: 'Total Stock',
+    totalCost: 'Total Cost',
+    totalPrice: 'Total Price',
     completedOrders: {
       name: 'Completed Orders',
       today: 'Today',
@@ -47,6 +50,7 @@ export const englishTranslations = {
     updateBook: 'Update Book',
     deleteBook: 'Delete Book',
     pervious: 'Previous',
+    stock: 'Stock',
     next: 'Next',
     page: 'Page',
     of: 'Of',
@@ -131,5 +135,6 @@ export const englishTranslations = {
     updateTransaction: 'Update Transaction',
     update: 'Update',
     books: 'Books',
+    createdAt: 'Created At',
   },
 };

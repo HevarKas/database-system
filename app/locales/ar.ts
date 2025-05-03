@@ -19,6 +19,9 @@ export const arabicTranslations = {
     differentCategories: 'فئات مختلفة',
     totalBooks: 'إجمالي الكتب',
     mostBookInCategory: 'أكثر كتب في الفئة',
+    totalStock: 'إجمالي المخزون',
+    totalCost: 'إجمالي التكلفة',
+    totalPrice: 'إجمالي السعر',
     completedOrders: {
       name: 'الطلبات المكتملة',
       today: 'اليوم',
@@ -50,6 +53,7 @@ export const arabicTranslations = {
     next: 'التالي',
     page: 'صفحة',
     of: 'من',
+    stock: 'المخزون',
     cancel: 'إلغاء',
     create: 'إنشاء',
     update: 'تحديث',
@@ -131,5 +135,6 @@ export const arabicTranslations = {
     updateTransaction: 'تحديث المعاملة',
     update: 'تحديث',
     books: 'الكتب',
+    createdAt: 'تاريخ الإنشاء',
   },
 };

@@ -46,6 +46,7 @@ export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
   const search = url.searchParams.get('search') || '';
   const page = url.searchParams.get('page') || '1';
+  const stock = url.searchParams.get('stock') || null;
 
   if (!search) {
     return {
@@ -54,7 +55,7 @@ export const loader = async ({ request }: { request: Request }) => {
   }
 
   try {
-    const data = await getBooksBySearch(page, search, request);
+    const data = await getBooksBySearch(page, search, stock, request);
     return { books: data };
   } catch (error) {
     console.error('Error fetching books:', error);

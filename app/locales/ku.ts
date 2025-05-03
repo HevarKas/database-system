@@ -19,6 +19,9 @@ export const kurdishTranslations = {
     differentCategories: 'هەموو بەشەکان',
     totalBooks: 'هەموو کتێبەکان',
     mostBookInCategory: 'زۆرترین کتێب لە بەشەکان',
+    totalStock: 'کۆی هەموو ژمارە',
+    totalCost: 'کۆی هەموو تێچوو',
+    totalPrice: 'کۆی هەموو نرخ',
     completedOrders: {
       name: 'داواکاری تەواو کراوەکان',
       today: 'ئەمڕۆ',
@@ -47,6 +50,7 @@ export const kurdishTranslations = {
     updateBook: 'کتێب نوێ بکە',
     deleteBook: 'کتێب بسڕەوە',
     pervious: 'پێشوو',
+    stock: 'ژمارە',
     next: 'دواتر',
     page: 'پەڕە',
     of: 'لە',
@@ -129,5 +133,6 @@ export const kurdishTranslations = {
     updateTransaction: 'نوێکردنەوە مامەڵە',
     update: 'نوێکردنەوە',
     Books: 'کتێبەکان',
+    createdAt: 'بەرواری دروستکردن',
   },
 };

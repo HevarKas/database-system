@@ -93,7 +93,12 @@ export const deleteBook = async (id: string, request: Request) => {
   return response;
 };
 
-export const getBooksBySearch = async (page: string, search: string | null, request: Request) => {
+export const getBooksBySearch = async (
+  page: string,
+  search: string | null,
+  stock: string | null,
+  request: Request,
+) => {
   const headers = await getEnrichedHeaders(request);
 
   const searchParams = new URLSearchParams();
@@ -101,6 +106,10 @@ export const getBooksBySearch = async (page: string, search: string | null, requ
 
   if (search) {
     searchParams.set('search', search);
+  }
+
+  if (stock) {
+    searchParams.set('stock', stock.toString());
   }
 
   const response = await fetch(buildUrl(`/api/admin/books?${searchParams}`), {

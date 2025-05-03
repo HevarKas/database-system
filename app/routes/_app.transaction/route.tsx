@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   Form,
   isRouteErrorResponse,
@@ -11,6 +11,7 @@ import {
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { FaPencilAlt, FaTrash } from 'react-icons/fa';
+import { GiReturnArrow } from 'react-icons/gi';
 import ErrorIcon from '~/assets/ErrorIcon';
 
 import { Button } from '~/components/ui/button';
@@ -38,7 +39,15 @@ import { Input } from '~/components/ui/input';
 import { convertArabicToEnglishNumbers } from '~/lib/general';
 import { getOrders } from '~/api/endpoints/orders';
 import { TranscationDataType } from '~/shared/types/pages/orders';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '~/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select';
 
 export const loader = async ({ request }: { request: Request }) => {
   const searchParams = new URL(request.url).searchParams;
@@ -53,17 +62,22 @@ export const loader = async ({ request }: { request: Request }) => {
     return data;
   } catch (error) {
     console.error('Error fetching orders:', error);
-    throw new Response('Unable to load orders. Please try again later.', { status: 500 });
+    throw new Response('Unable to load orders. Please try again later.', {
+      status: 500,
+    });
   }
 };
 
 const Transaction = () => {
   const { t } = useTranslation();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [, setStatusParams] = useState(searchParams.get('status') || 'pending');
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [statusQuery, setStatusQuery] = useState(searchParams.get('status') || 'pending');
-  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('search') || '',
+  );
+  const [statusQuery, setStatusQuery] = useState(
+    searchParams.get('status') || 'pending',
+  );
   const { data, current_page, last_page, per_page }: TranscationDataType =
     useLoaderData();
 
@@ -83,29 +97,31 @@ const Transaction = () => {
   const isPreviousDisabled = current_page <= 1;
   const isNextDisabled = current_page >= last_page;
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = convertArabicToEnglishNumbers(e.target.value);
+      setSearchQuery(value);
 
-    value = convertArabicToEnglishNumbers(value);
+      if (timerRef.current) clearTimeout(timerRef.current);
 
-    setSearchQuery(value);
+      timerRef.current = setTimeout(() => {
+        setSearchParams((prev) => {
+          const params = new URLSearchParams(prev);
+          params.set('search', value);
+          return params;
+        });
+      }, 1000);
+    },
+    [setSearchParams],
+  );
 
-    if (timer) {
-      clearTimeout(timer);
-    }
-
-    const newTimer = setTimeout(() => {
-      setSearchParams({ search: value });
-    }, 1000);
-
-    setTimer(newTimer);
-  }, [setSearchParams, timer]);
-
-  const handleStatusChange = useCallback((value: string) => {
-    setStatusParams(value);
-    setStatusQuery(value);
-    setSearchParams({ status: value });
-  }, [setStatusParams, setSearchParams]);
+  const handleStatusChange = useCallback(
+    (value: string) => {
+      setStatusQuery(value);
+      setSearchParams({ status: value });
+    },
+    [setSearchParams],
+  );
 
   return (
     <section className="flex flex-col gap-4 max-h-[calc(100vh-180px)]">
@@ -113,40 +129,39 @@ const Transaction = () => {
       <div className="flex flex-col gap-4">
         <h1 className="text-2xl font-semibold">{t('transaction.title')}</h1>
         <div className="flex items-center justify-center gap-4">
-        <Form method="get" className="flex items-center gap-4 w-[300px] sm:w-[400px] lg:w-[500px]">
-          <Input
-            type="text"
-            placeholder={t('transaction.scanBarcodeOrSearch')}
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="flex-grow w-[500px]"
-          />
-          <div className="w-40">
-          <Select
-            value={statusQuery}
-            onValueChange={handleStatusChange}
+          <Form
+            method="get"
+            className="flex items-center gap-4 w-[300px] sm:w-[400px] lg:w-[500px]"
           >
-            <SelectTrigger className="flex items-center gap-1">
-              <SelectValue className="text-sm text-gray-600 dark:text-gray-400">
-                {statusQuery === 'completed'
-                  ? t('transaction.completed')
-                  : t('transaction.pending')}
-              </SelectValue>
-              
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="pending">
-                  <SelectLabel>{t('transaction.pending')}</SelectLabel>
-                </SelectItem>
-                <SelectItem value="completed">
-                  <SelectLabel>{t('transaction.completed')}</SelectLabel>
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          </div>
-        </Form>
+            <Input
+              type="text"
+              placeholder={t('transaction.scanBarcodeOrSearch')}
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="flex-grow w-[500px]"
+            />
+            <div className="w-40">
+              <Select value={statusQuery} onValueChange={handleStatusChange}>
+                <SelectTrigger className="flex items-center gap-1">
+                  <SelectValue className="text-sm text-gray-600 dark:text-gray-400">
+                    {statusQuery === 'completed'
+                      ? t('transaction.completed')
+                      : t('transaction.pending')}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="pending">
+                      <SelectLabel>{t('transaction.pending')}</SelectLabel>
+                    </SelectItem>
+                    <SelectItem value="completed">
+                      <SelectLabel>{t('transaction.completed')}</SelectLabel>
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </Form>
         </div>
       </div>
       <div className="overflow-auto">
@@ -157,14 +172,33 @@ const Transaction = () => {
             <>
               <TableHeader>
                 <TableRow className="text-center">
-                  <TableHead className="text-center">{t('transaction.no')}</TableHead>
-                  <TableHead className="text-center">{t('transaction.customerName')}</TableHead>
-                  <TableHead className="text-center">{t('transaction.customerPhone')}</TableHead>
-                  <TableHead className="text-center">{t('transaction.books')}</TableHead>
-                  <TableHead className="text-center">{t('transaction.status')}</TableHead>
-                  <TableHead className="text-center">{t('transaction.total')}</TableHead>
-                  <TableHead className="text-center">{t('transaction.paid')}</TableHead>
-                  <TableHead className="text-center">{t('transaction.actions')}</TableHead>
+                  <TableHead className="text-center">
+                    {t('transaction.no')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('transaction.createdAt')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('transaction.customerName')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('transaction.customerPhone')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('transaction.books')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('transaction.status')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('transaction.total')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('transaction.paid')}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t('transaction.actions')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -173,8 +207,15 @@ const Transaction = () => {
                     <TableCell className="text-center">
                       {(current_page - 1) * per_page + index + 1}
                     </TableCell>
-                    <TableCell className="text-center">{transaction.customer_name}</TableCell>
-                    <TableCell className="text-center">{transaction.customer_phone_number}</TableCell>
+                    <TableCell className="text-center">
+                      {transaction.created_at}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {transaction.customer_name}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {transaction.customer_phone_number}
+                    </TableCell>
                     <TableCell className="text-center max-w-[200px]">
                       {transaction.books.map((book, index) => (
                         <span key={book.id}>
@@ -184,10 +225,17 @@ const Transaction = () => {
                       ))}
                     </TableCell>
                     <TableCell className="text-center">
-                      <span className={classNames('px-2 py-1 rounded-full text-xs font-semibold', {
-                        'bg-yellow-500 text-white': transaction.status === 'pending',
-                        'bg-green-500 text-white': transaction.status === 'completed',
-                      })}>
+                      <span
+                        className={classNames(
+                          'px-2 py-1 rounded-full text-xs font-semibold',
+                          {
+                            'bg-yellow-500 text-white':
+                              transaction.status === 'pending',
+                            'bg-green-500 text-white':
+                              transaction.status === 'completed',
+                          },
+                        )}
+                      >
                         {transaction.status}
                       </span>
                     </TableCell>
@@ -195,24 +243,46 @@ const Transaction = () => {
                       {formatNumberWithThousandSeparator(transaction.total)}
                       <span className="mx-1">{CURRENCY_UNIT}</span>
                     </TableCell>
-                    <TableCell className={classNames('text-center', {
-                      'text-red-500': transaction.paid < transaction.total,
-                      'text-green-500': transaction.paid === transaction.total,
-                    })}>
+                    <TableCell
+                      className={classNames('text-center', {
+                        'text-red-500': transaction.paid < transaction.total,
+                        'text-green-500':
+                          transaction.paid === transaction.total,
+                      })}
+                    >
                       {formatNumberWithThousandSeparator(transaction.paid)}
                       <span className="mx-1">{CURRENCY_UNIT}</span>
                     </TableCell>
-                    <TableCell className="flex justify-center gap-1 text-center">
-                      <Link to={`${transaction.id}/delete-transaction?${searchParams}`}>
-                        <Button variant="link" className="hover:text-red-500">
-                          <FaTrash />
-                        </Button>
-                      </Link>
-                      <Link to={`${transaction.id}/update-transaction?${searchParams}`}>
-                        <Button variant="link" className="hover:text-yellow-500">
-                          <FaPencilAlt />
-                        </Button>
-                      </Link>
+                    <TableCell className="text-center">
+                      <span>
+                        <Link
+                          to={`${transaction.id}/delete-transaction?${searchParams}`}
+                        >
+                          <Button variant="link" className="hover:text-red-500">
+                            <FaTrash />
+                          </Button>
+                        </Link>
+                        <Link
+                          to={`${transaction.id}/update-transaction?${searchParams}`}
+                        >
+                          <Button
+                            variant="link"
+                            className="hover:text-yellow-500"
+                          >
+                            <FaPencilAlt />
+                          </Button>
+                        </Link>
+                        <Link
+                          to={`${transaction.id}/return-book?${searchParams}`}
+                        >
+                          <Button
+                            variant="link"
+                            className="hover:text-blue-500"
+                          >
+                            <GiReturnArrow />
+                          </Button>
+                        </Link>
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}

@@ -48,7 +48,8 @@ export const loader = async ({ request }: { request: Request }) => {
     const searchParams = new URL(request.url).searchParams;
     const page = searchParams.get('page') || '1';
     const search = searchParams.get('search') || '';
-    const data = await getBooksBySearch(page, search, request);
+    const stock = searchParams.get('stock') || null;
+    const data = await getBooksBySearch(page, search, stock, request);
 
     if (data?.data?.length === 0 && data.current_page > 1) {
       return redirect('/books');
@@ -68,11 +69,30 @@ const Books = () => {
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get('search') || '',
   );
+  const [stockQuery, setStockQuery] = useState(
+    searchParams.get('stock') || null,
+  );
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const { data, current_page, last_page, per_page }: BooksDataType =
     useLoaderData();
 
   const barcodeColor = isDarkMode ? '#ffffff' : '#111827';
+
+  const updateSearchParam = useCallback(
+    (key: string, value: string | null) => {
+      setSearchParams((prev) => {
+        const newParams = new URLSearchParams(prev);
+        if (value === null || value === '') {
+          newParams.delete(key);
+        } else {
+          newParams.set(key, value);
+        }
+        newParams.set('page', '1');
+        return newParams;
+      });
+    },
+    [setSearchParams],
+  );
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -89,10 +109,7 @@ const Books = () => {
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      let value = e.target.value;
-
-      value = convertArabicToEnglishNumbers(value);
-
+      const value = convertArabicToEnglishNumbers(e.target.value);
       setSearchQuery(value);
 
       if (timer) {
@@ -100,13 +117,27 @@ const Books = () => {
       }
 
       const newTimer = setTimeout(() => {
-        setSearchParams({ search: value });
+        updateSearchParam('search', value);
       }, 1000);
 
       setTimer(newTimer);
     },
-    [setSearchParams, timer],
+    [timer, updateSearchParam],
   );
+
+  const handleStockChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value;
+    const value = parseInt(rawValue, 10);
+
+    if (isNaN(value) || value < 0 || value > 50) {
+      setStockQuery('');
+      updateSearchParam('stock', null);
+      return;
+    }
+
+    setStockQuery(value.toString());
+    updateSearchParam('stock', value.toString());
+  };
 
   const downloadBookBarcode = async (id: string) => {
     const response = await fetch(
@@ -143,6 +174,16 @@ const Books = () => {
             value={searchQuery}
             onChange={handleSearchChange}
             className="flex-grow w-[300px]"
+          />
+
+          <Input
+            type="number"
+            placeholder={t('books.stock')}
+            value={stockQuery ?? ''}
+            min={0}
+            max={50}
+            onChange={handleStockChange}
+            className="w-[100px]"
           />
         </Form>
         <Link to={`create-book?${searchParams}`} className="flex items-center">
@@ -269,7 +310,7 @@ const Books = () => {
       {data?.length > 0 && (
         <Pagination>
           <PaginationContent>
-            <PaginationItem value="dddd">
+            <PaginationItem>
               <PaginationPrevious
                 onClick={() =>
                   !isPreviousDisabled && handlePageChange(current_page - 1)

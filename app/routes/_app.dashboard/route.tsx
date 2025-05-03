@@ -108,10 +108,13 @@ function Dashboard() {
 
   const transformedData = [
     {
-      name: t('dashboard.completedOrders.today'),
-      pv: reportData.orders_today || 0,
+      name: t('dashboard.totalCost'),
+      pv: reportData.total_stock_by_cost || 0,
     },
-    { name: t('dashboard.completedOrders.average'), uv: 50 },
+    {
+      name: t('dashboard.totalPrice'),
+      uv: reportData.total_stock_by_price || 0,
+    },
   ];
 
   const pieDataReport = reportData.categories_with_most_books_in_stock.map(
@@ -136,14 +139,6 @@ function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="p-4">
           <h3 className="text-lg font-semibold mb-2">
-            {t('dashboard.newBooks')}
-          </h3>
-          <p className="text-2xl font-bold">
-            {reportData.books_added_in_last_2_weeks || 0}
-          </p>
-        </Card>
-        <Card className="p-4">
-          <h3 className="text-lg font-semibold mb-2">
             {t('dashboard.orderToday')}
           </h3>
           <p className="text-2xl font-bold">{reportData.orders_today || 0}</p>
@@ -161,6 +156,12 @@ function Dashboard() {
             {t('dashboard.totalBooks')}
           </h3>
           <p className="text-2xl font-bold">{reportData.total_books || 0}</p>
+        </Card>
+        <Card className="p-4">
+          <h3 className="text-lg font-semibold mb-2">
+            {t('dashboard.totalStock')}
+          </h3>
+          <p className="text-2xl font-bold">{reportData.total_stock || 0}</p>
         </Card>
       </div>
 
@@ -208,7 +209,7 @@ function Dashboard() {
               margin={{
                 top: 5,
                 right: 30,
-                left: 20,
+                left: 30,
                 bottom: 5,
               }}
             >

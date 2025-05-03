@@ -32,9 +32,10 @@ export type transactionBookType = {
 
 export type transactionType = {
   id: number;
+  created_at: string;
   customer_name: string;
   customer_phone_number: string;
-  status: string; 
+  status: string;
   total: number;
   paid: number;
   books: transactionBookType[];
