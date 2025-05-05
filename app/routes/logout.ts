@@ -13,18 +13,21 @@ export const loader = async ({ request }: { request: Request }) => {
   } catch (error) {
     console.error('Error in loader:', error);
 
-    throw new Response('Unable to process your request. Please try again later.', { status: 500 });
+    throw new Response(
+      'Unable to process your request. Please try again later.',
+      { status: 500 },
+    );
   }
 };
-
 
 export const action = async () => {
   const tokenClear = await removeToken();
   const rolesClear = await removeRoles();
 
   return redirect('/login', {
-    headers: {
-      'Set-Cookie': [tokenClear, rolesClear].join(', '), // Pass both cookies as a single string
-    },
+    headers: new Headers([
+      ['Set-Cookie', tokenClear],
+      ['Set-Cookie', rolesClear],
+    ]),
   });
 };
