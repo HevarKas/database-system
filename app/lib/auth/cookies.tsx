@@ -2,7 +2,7 @@ import { createCookie } from '@remix-run/node';
 
 export const tokenCookie = createCookie('token', {
   httpOnly: true,
-  secure: false,
+  secure: true,
   sameSite: 'lax',
   path: '/',
   secrets: ['your-secret-key'],
@@ -11,7 +11,7 @@ export const tokenCookie = createCookie('token', {
 
 export const rolesCookie = createCookie('roles', {
   httpOnly: true,
-  secure: false,
+  secure: true,
   sameSite: 'lax',
   path: '/',
   secrets: ['your-secret-key'],
