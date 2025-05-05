@@ -11,23 +11,22 @@ export const getAccessToken = async ({
   email,
   password,
 }: loginType) => {
-  const headers = await getEnrichedHeaders(request);
-
-  const body = new URLSearchParams();
-
-  body.set('email', email);
-  body.set('password', password);
-
-  console.log('body', body);
-  console.log('headers', headers);
-
-  const response = await fetch(buildUrl('/api/admin/token/create'), {
-    body,
-    method: 'post',
-    headers,
+  const headers = await getEnrichedHeaders(request, {
+    contentType: 'application/json',
   });
 
-  console.log('response', response);
+  const body = JSON.stringify({ email, password });
+
+  console.log('Request Body:', body);
+  console.log('Request Headers:', headers);
+
+  const response = await fetch(buildUrl('/api/admin/token/create'), {
+    method: 'POST',
+    headers,
+    body,
+  });
+
+  console.log('Response:', response);
 
   if (response.status !== 200) {
     const errorResponse = await response.json();
