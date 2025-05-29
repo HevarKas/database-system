@@ -38,4 +38,5 @@ export type BooksDataType = {
   last_page: number;
   per_page: number;
   total: number;
+  apiUrl: string;
 };

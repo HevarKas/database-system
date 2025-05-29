@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import {
   Form,
   isRouteErrorResponse,
+  json,
   Link,
   Outlet,
   redirect,
@@ -49,13 +50,17 @@ export const loader = async ({ request }: { request: Request }) => {
     const page = searchParams.get('page') || '1';
     const search = searchParams.get('search') || '';
     const stock = searchParams.get('stock') || null;
+
     const data = await getBooksBySearch(page, search, stock, request);
 
     if (data?.data?.length === 0 && data.current_page > 1) {
       return redirect('/books');
     }
 
-    return data || { data: [], current_page: 1, last_page: 1 };
+    return json({
+      ...data,
+      apiUrl: process.env.API_URL,
+    });
   } catch (error) {
     console.error('Error in loader:', error);
     throw new Response('Failed to load books', { status: 500 });
@@ -73,7 +78,7 @@ const Books = () => {
     searchParams.get('stock') || null,
   );
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-  const { data, current_page, last_page, per_page }: BooksDataType =
+  const { data, current_page, last_page, per_page, apiUrl }: BooksDataType =
     useLoaderData();
 
   const barcodeColor = isDarkMode ? '#ffffff' : '#111827';
@@ -140,9 +145,7 @@ const Books = () => {
   };
 
   const downloadBookBarcode = async (id: string) => {
-    const response = await fetch(
-      `${process.env.API_URL}/api/admin/books/${id}/barcode`,
-    );
+    const response = await fetch(`${apiUrl}/api/admin/books/${id}/barcode`);
 
     if (!response.ok) {
       throw new Error('Failed to download barcode');
