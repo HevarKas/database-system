@@ -141,7 +141,7 @@ const Books = () => {
 
   const downloadBookBarcode = async (id: string) => {
     const response = await fetch(
-      `http://178.18.250.240:9050/api/admin/books/${id}/barcode`,
+      `${process.env.API_URL}/api/admin/books/${id}/barcode`,
     );
 
     if (!response.ok) {
