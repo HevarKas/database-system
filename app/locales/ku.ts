@@ -23,7 +23,7 @@ export const kurdishTranslations = {
     totalCost: 'کۆی هەموو تێچوو',
     totalPrice: 'کۆی هەموو نرخ',
     completedOrders: {
-      name: 'داواکاری تەواو کراوەکان',
+      name: 'داهاتی کتێبخانە',
       today: 'ئەمڕۆ',
       average: 'ناوەند',
     },

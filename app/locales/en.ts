@@ -23,7 +23,7 @@ export const englishTranslations = {
     totalCost: 'Total Cost',
     totalPrice: 'Total Price',
     completedOrders: {
-      name: 'Completed Orders',
+      name: 'Bookstore Revenue',
       today: 'Today',
       average: 'Average',
     },

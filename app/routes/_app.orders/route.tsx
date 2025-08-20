@@ -41,6 +41,7 @@ import {
   filterNumericInput,
 } from '~/lib/general';
 import { Checkbox } from '~/components/ui/checkbox';
+import { t } from 'i18next';
 
 export const loader = async ({ request }: { request: Request }) => {
   const url = new URL(request.url);
@@ -180,19 +181,13 @@ function Orders() {
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       let value = e.target.value;
-
       value = convertArabicToEnglishNumbers(value);
-
       setSearchQuery(value);
-
-      if (timer) {
-        clearTimeout(timer);
-      }
-
-      const newTimer = setTimeout(() => {
-        setSearchParams({ search: value });
-      }, 1000);
-
+      if (timer) clearTimeout(timer);
+      const newTimer = setTimeout(
+        () => setSearchParams({ search: value }),
+        1000,
+      );
       setTimer(newTimer);
     },
     [setSearchParams, timer],
@@ -201,72 +196,54 @@ function Orders() {
   const handlePriceChange = (bookId: number, newPrice: string) => {
     const filteredValue = filterNumericInput(newPrice);
     const englishValue = convertArabicToEnglishNumbers(filteredValue);
-
     if (englishValue !== '') {
-      setPrices((prev) => ({
-        ...prev,
-        [bookId]: parseInt(englishValue, 10),
-      }));
+      setPrices((prev) => ({ ...prev, [bookId]: parseInt(englishValue, 10) }));
     }
   };
 
   const handlePaidLaterChange = (newPrice: string) => {
     const filteredValue = filterNumericInput(newPrice);
     const englishValue = convertArabicToEnglishNumbers(filteredValue);
-
-    if (englishValue !== '') {
-      setPaidLaterValue(englishValue);
-    } else {
-      setPaidLaterValue('0');
-    }
+    setPaidLaterValue(englishValue !== '' ? englishValue : '0');
   };
 
   const handlePhoneNumberChange = (newPhoneNumber: string) => {
     const filteredValue = filterNumericInput(newPhoneNumber);
     const englishValue = convertArabicToEnglishNumbers(filteredValue);
-
-    if (englishValue !== '') {
-      setCustomerPhoneNumber(englishValue);
-    } else {
-      setCustomerPhoneNumber('');
-    }
+    setCustomerPhoneNumber(englishValue !== '' ? englishValue : '');
   };
 
-  const handleAddToCart = (book: Book) => {
-    const updatedPrice =
-      prices[book.id] !== undefined ? prices[book.id] : book.price;
-
-    if (!cart.some((item) => item.id === book.id)) {
-      const updatedBook = { ...book, price: updatedPrice, quantity: 1 };
-      setCart((prevCart) => [...prevCart, updatedBook]);
-      setSearchParams({});
-      setSearchQuery('');
-    }
-  };
+  const handleAddToCart = useCallback(
+    (book: Book) => {
+      const updatedPrice = prices[book.id] ?? book.price;
+      if (!cart.some((item) => item.id === book.id)) {
+        const updatedBook = { ...book, price: updatedPrice, quantity: 1 };
+        setCart((prevCart) => [...prevCart, updatedBook]);
+        setSearchParams({});
+        setSearchQuery('');
+      }
+    },
+    [prices, cart, setCart, setSearchParams, setSearchQuery],
+  );
 
   const handleQuantityChange = (bookId: number, newQuantity: number) => {
     if (newQuantity <= 0) return;
-    const updatedCart = cart.map((item) => {
-      if (item.id === bookId) {
-        if (newQuantity <= item.stock) {
-          return { ...item, quantity: newQuantity };
-        }
-      }
-      return item;
-    });
+    const updatedCart = cart.map((item) =>
+      item.id === bookId && newQuantity <= item.stock
+        ? { ...item, quantity: newQuantity }
+        : item,
+    );
     setCart(updatedCart);
   };
 
   const handleRemoveFromCart = (bookId: number) => {
-    const updatedCart = cart.filter((item) => item.id !== bookId);
-    setCart(updatedCart);
+    setCart(cart.filter((item) => item.id !== bookId));
   };
 
   useEffect(() => {
     if (actionData) {
       if (actionData.type === 'success') {
         toast.success(actionData.toast);
-
         closeModal();
         setSearchParams({});
         setCart([]);
@@ -279,92 +256,99 @@ function Orders() {
         toast.error(actionData.toast);
       }
     }
-  }, [actionData, handleSearchChange, setSearchParams]);
+  }, [actionData, setSearchParams]);
+
+  useEffect(() => {
+    if (/^\d{13}$/.test(searchQuery) && booksList.length === 1) {
+      handleAddToCart(booksList[0]);
+      setSearchQuery('');
+      setSearchParams({});
+    }
+  }, [booksList, searchQuery, handleAddToCart, setSearchParams]);
 
   return (
     <section>
-      <div className="flex justify-between items-first gap-4">
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Selection & Search */}
         <div className="flex-grow flex flex-col space-y-6">
-          <Form method="get" className="flex items-center space-x-4">
+          <Form method="get" className="flex items-center gap-4 flex-wrap">
             <Input
               type="text"
               placeholder={t('orders.scanBarcodeOrSearch')}
               value={searchQuery}
               onChange={handleSearchChange}
-              className="flex-grow"
+              className="flex-grow min-w-[200px]"
             />
           </Form>
 
-          <div className="overflow-auto flex-grow h-[calc(100vh-300px)]">
-            <Table>
-              {booksList?.length === 0 ? (
-                <TableCaption>{t('orders.noBooksFound')}</TableCaption>
-              ) : (
-                <>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-center">
-                        {t('orders.title')}
-                      </TableHead>
-                      <TableHead className="text-center">
-                        {t('orders.author')}
-                      </TableHead>
-                      <TableHead className="text-center">
-                        {t('orders.stock')}
-                      </TableHead>
-                      <TableHead className="text-center">
-                        {t('orders.price')}
-                      </TableHead>
-                      <TableHead className="text-center">
-                        {t('orders.actions')}
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {booksList?.map((book) => (
-                      <TableRow key={book.id}>
-                        <TableCell className="text-center">
-                          {book.name}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {book.author}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {book.stock}
-                        </TableCell>
-                        <TableCell className="flex items-center justify-center">
-                          <Input
-                            type="text"
-                            value={
-                              prices[book.id] !== undefined
-                                ? prices[book.id]
-                                : book.price
-                            }
-                            onInput={(e) =>
-                              handlePriceChange(
-                                book.id,
-                                (e.target as HTMLInputElement).value,
-                              )
-                            }
-                            className="w-16"
-                          />
-                          <span className="ml-2">دينار</span>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <Button
-                            onClick={() => handleAddToCart(book)}
-                            className="p-2 text-sm"
-                            disabled={book.stock <= 0}
-                          >
-                            <FaPlus />
-                          </Button>
-                        </TableCell>
+          <div className="overflow-auto flex-grow">
+            <div className="overflow-x-auto">
+              <Table>
+                {booksList?.length === 0 ? (
+                  <TableCaption>{t('orders.noBooksFound')}</TableCaption>
+                ) : (
+                  <>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-center">
+                          {t('orders.title')}
+                        </TableHead>
+                        <TableHead className="text-center">
+                          {t('orders.author')}
+                        </TableHead>
+                        <TableHead className="text-center">
+                          {t('orders.stock')}
+                        </TableHead>
+                        <TableHead className="text-center">
+                          {t('orders.price')}
+                        </TableHead>
+                        <TableHead className="text-center">
+                          {t('orders.actions')}
+                        </TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </>
-              )}
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {booksList?.map((book) => (
+                        <TableRow key={book.id}>
+                          <TableCell className="text-center">
+                            {book.name}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {book.author}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {book.stock}
+                          </TableCell>
+                          <TableCell className="flex items-center justify-center gap-2">
+                            <Input
+                              type="text"
+                              value={prices[book.id] ?? book.price}
+                              onInput={(e) =>
+                                handlePriceChange(
+                                  book.id,
+                                  e.currentTarget.value,
+                                )
+                              }
+                              className="w-16"
+                            />
+                            <span>دينار</span>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <Button
+                              onClick={() => handleAddToCart(book)}
+                              className="p-2 text-sm"
+                              disabled={book.stock <= 0}
+                            >
+                              <FaPlus />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </>
+                )}
+              </Table>
+            </div>
           </div>
 
           {booksList?.length > 0 && (
@@ -377,9 +361,7 @@ function Orders() {
                     }
                     className={classNames(
                       'cursor-pointer hover:bg-transparent',
-                      {
-                        'opacity-50 cursor-not-allowed': isPreviousDisabled,
-                      },
+                      { 'opacity-50 cursor-not-allowed': isPreviousDisabled },
                     )}
                   />
                 </PaginationItem>
@@ -397,9 +379,7 @@ function Orders() {
                     }
                     className={classNames(
                       'cursor-pointer hover:bg-transparent',
-                      {
-                        'opacity-50 cursor-not-allowed': isNextDisabled,
-                      },
+                      { 'opacity-50 cursor-not-allowed': isNextDisabled },
                     )}
                   />
                 </PaginationItem>
@@ -408,77 +388,79 @@ function Orders() {
           )}
         </div>
 
-        <div className="flex flex-col justify-between w-[600px] flex-shrink-0 h-screen max-h-[calc(100vh-200px)] bg-gray-100 dark:bg-gray-800 p-6">
-          <div className="overflow-auto flex-grow h-[calc(100vh-300px)]">
+        {/* Cart */}
+        <div className="flex flex-col w-full lg:w-[600px] max-h-[calc(100vh-200px)] bg-gray-100 dark:bg-gray-800 p-4 sm:p-6">
+          <div className="overflow-auto flex-grow">
             <h2 className="text-xl font-semibold mb-4">{t('orders.cart')}</h2>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-center">
-                    {t('orders.book')}
-                  </TableHead>
-                  <TableHead className="text-center">
-                    {t('orders.quantity')}
-                  </TableHead>
-                  <TableHead className="text-center">
-                    {t('orders.price')}
-                  </TableHead>
-                  <TableHead className="text-center">
-                    {t('orders.total')}
-                  </TableHead>
-                  <TableHead className="text-center">
-                    {t('orders.actions')}
-                  </TableHead>
-                  <TableHead className="text-center"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {cart.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="text-center">{item.name}</TableCell>
-                    <TableCell className="text-center min-w-[200px]">
-                      <Button
-                        size="sm"
-                        onClick={() =>
-                          handleQuantityChange(item.id, item.quantity - 1)
-                        }
-                        className="p-1 text-sm mx-2"
-                      >
-                        <FaMinus />
-                      </Button>
-                      {item.quantity}
-                      <Button
-                        size="sm"
-                        onClick={() =>
-                          handleQuantityChange(item.id, item.quantity + 1)
-                        }
-                        className="p-1 text-sm mx-2"
-                      >
-                        <FaPlus />
-                      </Button>
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {item.price} دينار
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {item.quantity * item.price} دينار
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <Button
-                        onClick={() => handleRemoveFromCart(item.id)}
-                        className="p-2 text-sm"
-                      >
-                        <FaTrash />
-                      </Button>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-center">
+                      {t('orders.book')}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t('orders.quantity')}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t('orders.price')}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t('orders.total')}
+                    </TableHead>
+                    <TableHead className="text-center">
+                      {t('orders.actions')}
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {cart.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="text-center">{item.name}</TableCell>
+                      <TableCell className="text-center min-w-[150px] flex justify-center items-center gap-1">
+                        <Button
+                          size="sm"
+                          onClick={() =>
+                            handleQuantityChange(item.id, item.quantity - 1)
+                          }
+                          className="p-1"
+                        >
+                          <FaMinus />
+                        </Button>
+                        {item.quantity}
+                        <Button
+                          size="sm"
+                          onClick={() =>
+                            handleQuantityChange(item.id, item.quantity + 1)
+                          }
+                          className="p-1"
+                        >
+                          <FaPlus />
+                        </Button>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.price} دينار
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {item.quantity * item.price} دينار
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button
+                          onClick={() => handleRemoveFromCart(item.id)}
+                          className="p-2 text-sm"
+                        >
+                          <FaTrash />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
 
-          <div className="flex justify-between items-start mt-6">
-            <div className="flex flex-col space-y-4 w-full">
+          <div className="flex flex-col sm:flex-row justify-between items-start mt-6 gap-4">
+            <div className="flex flex-col gap-4 w-full sm:w-auto">
               <div>
                 {t('orders.totalPrice')}:
                 <span
@@ -499,41 +481,38 @@ function Orders() {
               </div>
 
               {isPaidLater && (
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap gap-2">
                   <Input
                     type="text"
                     placeholder={t('orders.enterCustomerName')}
-                    name="customer_name"
                     value={customerName}
                     onInput={(e) => setCustomerName(e.currentTarget.value)}
-                    className="w-1/3 sm:w-auto"
+                    className="w-full sm:w-auto"
                   />
                   <Input
                     type="text"
                     placeholder={t('orders.enterCustomerPhoneNumber')}
-                    name="customer_phone_number"
-                    value={customerPhoneNumber.toString()}
+                    value={customerPhoneNumber}
                     onInput={(e) =>
                       handlePhoneNumberChange(e.currentTarget.value)
                     }
-                    className="w-1/3 sm:w-auto"
+                    className="w-full sm:w-auto"
                   />
                   <Input
                     type="text"
                     placeholder={t('orders.enterPaidPrice')}
-                    name="paid"
-                    value={paidLaterValue.toString()}
+                    value={paidLaterValue}
                     onInput={(e) =>
                       handlePaidLaterChange(e.currentTarget.value)
                     }
-                    className="w-1/3 sm:w-auto"
+                    className="w-full sm:w-auto"
                     disabled={!isPaidLater}
                   />
                 </div>
               )}
             </div>
 
-            <div className="text-right w-full sm:w-auto">
+            <div className="w-full sm:w-auto text-right">
               <Button onClick={openModal} className="w-full sm:w-auto">
                 {t('orders.confirmOrder')}
               </Button>
@@ -541,6 +520,7 @@ function Orders() {
           </div>
         </div>
       </div>
+
       <ConfirmationModal
         isOpen={isModalOpen}
         onCancel={closeModal}
@@ -560,7 +540,6 @@ export default Orders;
 
 export function ErrorBoundary() {
   const error = useRouteError();
-
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-180px)] dark:bg-gray-900 p-6">
       <div className="max-w-lg w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 border border-gray-200 dark:border-gray-700">
@@ -570,30 +549,14 @@ export function ErrorBoundary() {
           </div>
           <div>
             {isRouteErrorResponse(error) ? (
-              <>
-                <h1 className="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
-                  {error.status} {error.statusText}
-                </h1>
-                <p className="text-gray-800 dark:text-gray-300">{error.data}</p>
-              </>
-            ) : error instanceof Error ? (
-              <>
-                <h1 className="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
-                  Error
-                </h1>
-                <p className="text-gray-800 dark:text-gray-300">
-                  {error.message}
-                </p>
-              </>
+              <h2 className="text-xl font-bold">{error.data}</h2>
             ) : (
-              <h1 className="text-3xl font-bold text-red-600 dark:text-red-400">
-                Unknown Error
-              </h1>
+              <h2 className="text-xl font-bold">Something went wrong</h2>
             )}
           </div>
         </div>
-        <p className="text-center text-gray-600 dark:text-gray-400">
-          Please try again later or contact support if the issue persists.
+        <p className="text-gray-700 dark:text-gray-300">
+          {t('orders.errorBoundaryMessage')}
         </p>
       </div>
     </div>

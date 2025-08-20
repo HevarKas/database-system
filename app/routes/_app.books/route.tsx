@@ -14,8 +14,9 @@ import Barcode from 'react-barcode';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { FaPencilAlt, FaTrash } from 'react-icons/fa';
-import { FaDownload } from 'react-icons/fa6';
+import { IoPrint } from 'react-icons/io5';
 import ErrorIcon from '~/assets/ErrorIcon';
+import JsBarcode from 'jsbarcode';
 
 import { Button } from '~/components/ui/button';
 import {
@@ -56,10 +57,10 @@ export const loader = async ({ request }: { request: Request }) => {
     if (data?.data?.length === 0 && data.current_page > 1) {
       return redirect('/books');
     }
+    console.log('books data:', data);
 
     return json({
       ...data,
-      apiUrl: process.env.API_URL,
     });
   } catch (error) {
     console.error('Error in loader:', error);
@@ -78,7 +79,7 @@ const Books = () => {
     searchParams.get('stock') || null,
   );
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
-  const { data, current_page, last_page, per_page, apiUrl }: BooksDataType =
+  const { data, current_page, last_page, per_page }: BooksDataType =
     useLoaderData();
 
   const barcodeColor = isDarkMode ? '#ffffff' : '#111827';
@@ -112,6 +113,23 @@ const Books = () => {
     [last_page, setSearchParams],
   );
 
+  function downloadBarcode(barcode: string, filename: string = 'barcode.png') {
+    const canvas = document.createElement('canvas');
+
+    JsBarcode(canvas, barcode, {
+      format: 'EAN13',
+      displayValue: true,
+      width: 2,
+      height: 80,
+      margin: 5,
+    });
+
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = filename;
+    link.click();
+  }
+
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = convertArabicToEnglishNumbers(e.target.value);
@@ -142,24 +160,6 @@ const Books = () => {
 
     setStockQuery(value.toString());
     updateSearchParam('stock', value.toString());
-  };
-
-  const downloadBookBarcode = async (id: string) => {
-    const response = await fetch(`${apiUrl}/api/admin/books/${id}/barcode`);
-
-    if (!response.ok) {
-      throw new Error('Failed to download barcode');
-    }
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `barcode-${id}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
   };
 
   const isPreviousDisabled = current_page <= 1;
@@ -298,9 +298,14 @@ const Books = () => {
                       <Button
                         variant="link"
                         className="hover:text-blue-500"
-                        onClick={() => downloadBookBarcode(book.id.toString())}
+                        onClick={() =>
+                          downloadBarcode(
+                            book.barcode,
+                            `${book.name}-barcode.png`,
+                          )
+                        }
                       >
-                        <FaDownload />
+                        <IoPrint />
                       </Button>
                     </TableCell>
                   </TableRow>

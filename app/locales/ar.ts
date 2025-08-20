@@ -23,7 +23,7 @@ export const arabicTranslations = {
     totalCost: 'إجمالي التكلفة',
     totalPrice: 'إجمالي السعر',
     completedOrders: {
-      name: 'الطلبات المكتملة',
+      name: 'إيرادات المكتبة',
       today: 'اليوم',
       average: 'متوسط',
     },
